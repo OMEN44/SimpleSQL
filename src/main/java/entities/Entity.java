@@ -1,0 +1,39 @@
+package entities;
+
+import entities.cell.BasicCell;
+import logger.SimpleSQLException;
+
+/**
+ * @apiNote Core for all the objects in this library. these objects are what build up a table.
+ */
+@SuppressWarnings("unused")
+public interface Entity {
+    /**
+     * This enum is a list of identifiers for the different entities.
+     */
+    enum instanceType {
+        TABLE,
+        COLUMN,
+        ROW,
+        CELL
+    }
+
+    /**
+     * @return This method is implemented int each entity and returns the hard coded entity type.
+     */
+    instanceType getObjectType();
+
+    /**
+     * @param entity Entity being checked.
+     * @return The entity type of the object being checked.
+     * @throws SimpleSQLException This is thrown if the entity being checked is not from the vanilla library. <br>
+     * {@link Entity#getObjectType()} should be implemented into your class instead.
+     */
+    static instanceType getInstanceType(Entity entity) throws SimpleSQLException {
+        if (entity instanceof BasicCell) {
+            return instanceType.CELL;
+        } else {
+            throw new SimpleSQLException("Entity input is not recognised.");
+        }
+    }
+}
