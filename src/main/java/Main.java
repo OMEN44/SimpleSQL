@@ -1,11 +1,10 @@
 import connectors.Connector;
-import connectors.InitConnector;
+import connectors.InitConnection;
 import dbProfiles.MySQL;
 import dbProfiles.SQLite;
-import entities.cell.BasicCell;
-import entities.cell.BasicCellImpl;
-import entities.column.Column;
-import entities.column.CreateColumn;
+import internal.CreateColumn;
+import internal.CreateTable;
+import entities.Table;
 import internal.Datatype;
 import logger.EntityNotUniqueException;
 import logger.TableUnassignedException;
@@ -26,16 +25,16 @@ public class Main {
                 ""
         );
 
-        Connector conn = new InitConnector(sqLite);
+        Connector conn = new InitConnection(sqLite);
 
-        BasicCell basicCell = new BasicCellImpl(Datatype.INT, 10);
+        Table table = new CreateTable(
+                "main_table",
+                new CreateColumn("UUID", Datatype.INT, null, false, false, true),
+                new CreateColumn("name", Datatype.VARCHAR, "huon", true, false, false),
+                new CreateColumn("days", Datatype.INT)
+        ).write(conn);
 
-        Column column = new CreateColumn(
-                "test",
-                Datatype.INT
-        );
 
-        column.getParentTable();
 
     }
 }

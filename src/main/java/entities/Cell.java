@@ -1,6 +1,4 @@
-package entities.cell;
-
-import entities.column.Column;
+package entities;
 
 @SuppressWarnings("unused")
 public interface Cell extends BasicCell {

@@ -1,6 +1,5 @@
 package entities;
 
-import entities.cell.BasicCell;
 import logger.SimpleSQLException;
 
 /**

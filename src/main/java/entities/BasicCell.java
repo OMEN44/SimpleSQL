@@ -1,6 +1,5 @@
-package entities.cell;
+package entities;
 
-import entities.HasTable;
 import internal.Datatype;
 
 /**

@@ -1,7 +1,5 @@
 package entities;
 
-import entities.column.Column;
-
 import java.util.List;
 
 @SuppressWarnings("unused")

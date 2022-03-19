@@ -1,9 +1,9 @@
 import connectors.Connector;
-import entities.Param;
+import internal.Param;
 import entities.Table;
-import entities.cell.Cell;
-import entities.cell.CreateCell;
-import entities.column.Column;
+import entities.Cell;
+import internal.CreateCell;
+import entities.Column;
 import logger.TableUnassignedException;
 
 import java.sql.Connection;

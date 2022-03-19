@@ -1,7 +1,7 @@
-package entities.column;
+package entities;
 
 import entities.HasTable;
-import entities.cell.Cell;
+import entities.Cell;
 import internal.Datatype;
 
 import java.util.List;
@@ -27,7 +27,7 @@ public interface Column extends HasTable {
     /**
      * @return True if the column defaults to null.
      */
-    boolean isNull();
+    boolean isNotNull();
 
     /**
      * @return Gets the default value of the column. If the column is null this will always be null.

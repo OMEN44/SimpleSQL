@@ -12,7 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @SuppressWarnings("unused")
-public class InitConnector implements Connector {
+public class InitConnection implements Connector {
 
     public Connection connection;
     private final Database DATABASE;
@@ -25,7 +25,7 @@ public class InitConnector implements Connector {
     private final ConnectionType connType;
     private Status status;
 
-    public InitConnector(Database database) {
+    public InitConnection(Database database) {
         switch (database.getDatabaseType()) {
             case MySQL -> {
                 MySQL mySQL = (MySQL) database;

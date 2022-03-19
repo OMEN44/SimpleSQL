@@ -1,9 +1,10 @@
-package entities.cell;
+package internal;
 
 import entities.HasTable;
 import entities.Table;
-import entities.column.Column;
-import internal.Datatype;
+import entities.BasicCell;
+import entities.Cell;
+import entities.Column;
 import logger.TableUnassignedException;
 
 @SuppressWarnings("unused")

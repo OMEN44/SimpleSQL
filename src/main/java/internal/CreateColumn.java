@@ -1,9 +1,9 @@
-package entities.column;
+package internal;
 
 import entities.HasTable;
 import entities.Table;
-import entities.cell.Cell;
-import internal.Datatype;
+import entities.Cell;
+import entities.Column;
 import logger.TableUnassignedException;
 
 import java.util.List;
@@ -76,7 +76,7 @@ public class CreateColumn implements Column {
     }
 
     @Override
-    public boolean isNull() {
+    public boolean isNotNull() {
         return this.NOT_NULL;
     }
 
