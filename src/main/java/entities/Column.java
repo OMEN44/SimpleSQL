@@ -1,8 +1,6 @@
 package entities;
 
-import entities.HasTable;
-import entities.Cell;
-import internal.Datatype;
+import impl.Datatype;
 
 import java.util.List;
 

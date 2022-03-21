@@ -1,8 +1,8 @@
 import connectors.Connector;
-import internal.Param;
+import impl.Param;
 import entities.Table;
 import entities.Cell;
-import internal.CreateCell;
+import impl.CreateCell;
 import entities.Column;
 import logger.TableUnassignedException;
 

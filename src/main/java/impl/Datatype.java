@@ -1,4 +1,4 @@
-package internal;
+package impl;
 
 /**
  * @apiNote This is only for common data types more complex data types should be written in string form.

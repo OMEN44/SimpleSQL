@@ -1,9 +1,8 @@
-package internal;
+package impl;
 
 import connectors.Connector;
 import entities.Column;
 import entities.Table;
-import entities.TableByName;
 import logger.EntityNotUniqueException;
 
 import java.util.ArrayList;
@@ -11,7 +10,7 @@ import java.util.Arrays;
 import java.util.List;
 
 @SuppressWarnings("unused")
-public class CreateTable extends TableByName implements Table {
+public class CreateTable implements Table {
     private final String NAME;
     private final Column PRIMARY_COLUMN;
     private final List<Column> COLUMNS;
@@ -86,6 +85,8 @@ public class CreateTable extends TableByName implements Table {
 
     @Override
     public List<Column> getColumns() {
-        return this.COLUMNS;
+        List<Column> columns = new ArrayList<>(this.COLUMNS);
+        columns.add(this.PRIMARY_COLUMN);
+        return columns;
     }
 }

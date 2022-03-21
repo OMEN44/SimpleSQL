@@ -1,6 +1,6 @@
 package entities;
 
-import internal.Datatype;
+import impl.Datatype;
 
 /**
  * BasicCell is the base for most of this library. <br>

@@ -1,4 +1,4 @@
-package internal;
+package impl;
 
 import entities.HasTable;
 import entities.Table;

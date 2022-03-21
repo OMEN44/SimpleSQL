@@ -2,16 +2,16 @@ import connectors.Connector;
 import connectors.InitConnection;
 import dbProfiles.MySQL;
 import dbProfiles.SQLite;
-import internal.CreateColumn;
-import internal.CreateTable;
+import entities.Column;
 import entities.Table;
-import internal.Datatype;
+import impl.*;
 import logger.EntityNotUniqueException;
-import logger.TableUnassignedException;
+
+import java.util.List;
 
 public class Main {
-    public static void main(String[] args) throws EntityNotUniqueException, TableUnassignedException {
 
+    public static void main(String[] args) throws EntityNotUniqueException {
         SQLite sqLite = new SQLite(
                 "testing",
                 "C:\\Users\\huons\\Documents\\JavaPrograms\\SimpleSQL\\database"
@@ -25,7 +25,7 @@ public class Main {
                 ""
         );
 
-        Connector conn = new InitConnection(sqLite);
+        Connector conn = new InitConnection(mySQL);
 
         Table table = new CreateTable(
                 "main_table",
@@ -34,7 +34,16 @@ public class Main {
                 new CreateColumn("days", Datatype.INT)
         ).write(conn);
 
+        Table table1 = new TableByName(conn, "main_table");
+        System.out.println(table1.getPrimaryColumn().getName());
 
+        Table table2 = new TableByName(conn, "players");
+        List<Column> columns = table2.getColumns();
+        for (Column col : columns) {
+            System.out.println(col.getName());
+        }
 
+        Column column = new ColumnByName(conn, "ign", table2);
+        System.out.println(column.getDatatype());
     }
 }
