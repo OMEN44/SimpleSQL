@@ -12,7 +12,7 @@ public interface Table extends Entity {
     /**
      * @return Get the primary column of the table.
      */
-    Column getPrimaryColumn();
+    PrimaryKey getPrimaryColumn();
 
     /**
      * @return Get any unique columns of the table. This includes the primary column.
@@ -23,4 +23,9 @@ public interface Table extends Entity {
      * @return Gets all the columns in the table.
      */
     List<Column> getColumns();
+
+    /**
+     * @return Returns all the rows in the table.
+     */
+    List<Row> getRows();
 }

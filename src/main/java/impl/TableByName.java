@@ -1,9 +1,7 @@
 package impl;
 
 import connectors.Connector;
-import entities.Column;
-import entities.Entity;
-import entities.Table;
+import entities.*;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -12,7 +10,7 @@ import java.util.List;
 @SuppressWarnings("unused")
 public class TableByName implements Table {
     private final String NAME;
-    private Column PRIMARY_COLUMN;
+    private PrimaryKey PRIMARY_COLUMN;
     private final List<Column> COLUMNS;
 
     public TableByName(Connector connector, String name) {
@@ -31,13 +29,13 @@ public class TableByName implements Table {
                     while (rs.next()) {
                         if (rs.getString("Key").equalsIgnoreCase("pri")) {
                             if (rs.getString("Type").endsWith(")"))
-                                this.PRIMARY_COLUMN = new CreateColumn(
+                                this.PRIMARY_COLUMN = new CreatePrimaryColumn(
                                         rs.getString("Field"),
                                         Datatype.valueOf(rs.getString("Type").split("\\(")[0]
                                                 .toUpperCase())
                                 );
                             else
-                                this.PRIMARY_COLUMN = new CreateColumn(
+                                this.PRIMARY_COLUMN = new CreatePrimaryColumn(
                                         rs.getString("Field"),
                                         Datatype.valueOf(rs.getString("Type"))
                                 );
@@ -63,13 +61,13 @@ public class TableByName implements Table {
                     while (rs.next()) {
                         if (rs.getString("pk").equalsIgnoreCase("1")) {
                             if (rs.getString("type").endsWith(")"))
-                                this.PRIMARY_COLUMN = new CreateColumn(
+                                this.PRIMARY_COLUMN = new CreatePrimaryColumn(
                                         rs.getString("name"),
                                         Datatype.valueOf(rs.getString("type").split("\\(")[0]
                                                 .toUpperCase())
                                 );
                             else
-                                this.PRIMARY_COLUMN = new CreateColumn(
+                                this.PRIMARY_COLUMN = new CreatePrimaryColumn(
                                         rs.getString("name"),
                                         Datatype.valueOf(rs.getString("type"))
                                 );
@@ -110,7 +108,7 @@ public class TableByName implements Table {
     }
 
     @Override
-    public Column getPrimaryColumn() {
+    public PrimaryKey getPrimaryColumn() {
         return this.PRIMARY_COLUMN;
     }
 
@@ -130,5 +128,16 @@ public class TableByName implements Table {
         List<Column> columns = new ArrayList<>(this.COLUMNS);
         columns.add(this.PRIMARY_COLUMN);
         return columns;
+    }
+
+    @Override
+    public List<Row> getRows() {
+        List<Row> rows = new ArrayList<>();
+        /*List<Cell> primaryCells = this.getPrimaryColumn().getCells();
+        int index = primaryCells.size();
+        for (Cell cell : primaryCells)
+            rows.add(new RowByUniqueCell(cell.setParentTable(this)));*/
+
+        return rows;
     }
 }

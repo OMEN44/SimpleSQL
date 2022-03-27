@@ -5,6 +5,7 @@ import entities.Cell;
 import entities.Column;
 import entities.HasTable;
 import entities.Table;
+import logger.MissingColumnException;
 import logger.TableUnassignedException;
 
 import java.sql.Connection;
@@ -24,7 +25,7 @@ public class ColumnByName implements Column {
     private List<Cell> cells;
     private Table parentTable;
 
-    public ColumnByName(Connector connector, String name, Table table) {
+    public ColumnByName(Connector connector, String name, Table table) throws MissingColumnException {
         this.NAME = name;
         this.parentTable = table;
 
@@ -89,8 +90,9 @@ public class ColumnByName implements Column {
                     }
                 }
             }
-            assert pc != null;
             pc.setParentTable(table);
+        } catch (NullPointerException e) {
+            throw new MissingColumnException("Column " + name + " was not found in table " + table.getName());
         } catch (SQLException e) {
             e.printStackTrace();
         } finally {
@@ -125,6 +127,11 @@ public class ColumnByName implements Column {
     public HasTable setParentTable(Table table) {
         this.parentTable = table;
         return this;
+    }
+
+    @Override
+    public void write(Connector conn) throws TableUnassignedException {
+
     }
 
     @Override

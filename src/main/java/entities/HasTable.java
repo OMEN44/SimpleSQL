@@ -1,5 +1,6 @@
 package entities;
 
+import connectors.Connector;
 import logger.TableUnassignedException;
 
 /**
@@ -21,4 +22,6 @@ public interface HasTable extends Entity {
      * @return The entity that the table is being set for.
      */
     HasTable setParentTable(Table table);
+
+    void write(Connector conn) throws TableUnassignedException;
 }

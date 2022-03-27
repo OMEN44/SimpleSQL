@@ -1,5 +1,6 @@
 package impl;
 
+import connectors.Connector;
 import entities.HasTable;
 import entities.Table;
 import entities.BasicCell;
@@ -42,6 +43,11 @@ public class BasicCellImpl implements BasicCell {
     public HasTable setParentTable(Table table) {
         this.table = table;
         return this;
+    }
+
+    @Override
+    public void write(Connector conn) throws TableUnassignedException {
+
     }
 
     @Override

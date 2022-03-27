@@ -20,6 +20,9 @@ public class Boxer {
     private boolean hasFooter = false;
     private String footer;
     private Alignment titleFooter;
+    //line wrapper
+    private boolean useLineWrap = false;
+    private int lineWrapLimit = 20;
 
 
     public enum Alignment {
@@ -67,6 +70,30 @@ public class Boxer {
         if (this.content == null)
             throw new NoContentException();
 
+        //add line wrapping
+        if (useLineWrap) {
+            String temp = this.content.substring(0, lineWrapLimit);
+            //int reps = (int) Math.floor((double) this.content.replace(" ", "").length() / lineWrapLimit);
+            System.out.println(this.content.replace(" ", ""));
+            List<Integer> indices = new ArrayList<>();
+            for (int i = 0; i < this.content.length(); i++) {
+                if (this.content.charAt(i) == ' ')
+                    indices.add(i);
+            }
+            int reps = 1;
+            int half = (int) (this.lineWrapLimit * 0.5);
+            for (int i : indices) {
+                System.out.println(this.lineWrapLimit * reps);
+                System.out.println(this.lineWrapLimit * reps + half);
+                System.out.println(this.lineWrapLimit * reps - half);
+                if (i == this.lineWrapLimit * reps
+                        || i <= this.lineWrapLimit * reps + half && i >= this.lineWrapLimit * reps - half) {
+                    System.out.println(true + " " + i);
+                } else System.out.println(false + " " + i);
+                reps++;
+            }
+        }
+
         //format string into a usable form:
         List<String> lines = new ArrayList<>();
         if (this.content.contains("\n")) {
@@ -77,6 +104,18 @@ public class Boxer {
                 lines.add(" " + l + " ");
             }
         } else lines.add(" " + this.content + " ");
+
+        //add wrapping
+        /*if (useLineWrap) {
+            List<String> tempList = new ArrayList<>(lines);
+            lines.clear();
+            for (int i = 0; i < tempList.size() - 1; i++) {
+                if (tempList.get(i).length() > lineWrapLimit) {
+                    lines.add(tempList.get(i).substring(0, lineWrapLimit));
+                    lines.add(tempList.get(i).substring(lineWrapLimit + 1));
+                } else lines.add(tempList.get(i));
+            }
+        }*/
 
         int len;
         if (!this.content.contains("\n"))
@@ -198,6 +237,24 @@ public class Boxer {
         this.footer = footer;
         this.titleFooter = Alignment.BOTTOM_LEFT;
         this.hasFooter = true;
+        return this;
+    }
+
+    public Boxer disableLineWrap() {
+        this.useLineWrap = false;
+        this.lineWrapLimit = 0;
+        return this;
+    }
+
+    public Boxer enableLineWrap(int limit) {
+        this.useLineWrap = true;
+        this.lineWrapLimit = limit;
+        return this;
+    }
+
+    public Boxer enableLineWrap() {
+        this.useLineWrap = true;
+        this.lineWrapLimit = 20;
         return this;
     }
 

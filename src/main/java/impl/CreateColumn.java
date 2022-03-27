@@ -1,9 +1,7 @@
 package impl;
 
-import entities.HasTable;
-import entities.Table;
-import entities.Cell;
-import entities.Column;
+import connectors.Connector;
+import entities.*;
 import logger.TableUnassignedException;
 
 import java.util.List;
@@ -39,6 +37,25 @@ public class CreateColumn implements Column {
         this.NOT_NULL = false;
         this.IS_UNIQUE = false;
         this.PRIMARY_KEY = false;
+    }
+
+    public void write(Connector connector) throws TableUnassignedException {
+        //check if column has a table:
+        Table table = this.getParentTable();
+        String query = "ALTER TABLE `" + table.getName() + "` ADD `" + this.getName() +
+                "` " + this.getDatatype().toString();
+        if (this.NOT_NULL)
+            query = query + " NOT NULL";
+        else
+            query = query + " NULL";
+
+        if (this.PRIMARY_KEY)
+            query = query + ", ADD PRIMARY KEY (`" + this.getName() + "`)";
+        else if (this.IS_UNIQUE)
+            query = query + ", ADD UNIQUE (`" + this.getName() + "`)";
+
+        System.out.println(query);
+        connector.executeUpdate(query);
     }
 
     @Override
