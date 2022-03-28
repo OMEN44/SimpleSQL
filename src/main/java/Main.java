@@ -14,10 +14,21 @@ import java.util.List;
 
 public class Main {
 
-    public static void main(String[] args) throws EntityNotUniqueException, MissingColumnException, TableUnassignedException, Boxer.NoContentException {
+    public static void main(String[] args) throws Boxer.NoContentException {
 
         Boxer boxer = new Boxer();
-        boxer.setContent("hello I am the best person\nlike ever in the whole world.").enableLineWrap(8).write();
+        boxer.setContent("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt\n" +
+                "ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco\n" +
+                "laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in\n" +
+                "voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat\n" +
+                " non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.")
+                .enableLineWrap(40).write();
+        boxer.setContent("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt\n" +
+                        "ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco\n" +
+                        "laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in\n" +
+                        "voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat\n" +
+                        " non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.")
+                .disableLineWrap().write();
 
         /*SQLite sqLite = new SQLite(
                 "testing",

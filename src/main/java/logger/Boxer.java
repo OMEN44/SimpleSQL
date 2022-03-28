@@ -1,6 +1,7 @@
 package logger;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 
@@ -67,31 +68,30 @@ public class Boxer {
     }
 
     public void buildBox() throws NoContentException {
-        if (this.content == null)
-            throw new NoContentException();
+        if (this.content == null) throw new NoContentException();
 
         //add line wrapping
         if (useLineWrap) {
-            String temp = this.content.substring(0, lineWrapLimit);
-            //int reps = (int) Math.floor((double) this.content.replace(" ", "").length() / lineWrapLimit);
-            System.out.println(this.content.replace(" ", ""));
-            List<Integer> indices = new ArrayList<>();
-            for (int i = 0; i < this.content.length(); i++) {
-                if (this.content.charAt(i) == ' ')
-                    indices.add(i);
+            List<String> lines = new ArrayList<>();
+            Collections.addAll(lines, this.content.split("\n"));
+            StringBuilder sb = new StringBuilder();
+            for (String line : lines) {
+                for (int i = 0; i < line.length()/lineWrapLimit + 1; i++) {
+                    String s;
+                    if ((i + 1) * lineWrapLimit > line.length())
+                        s = line.substring(i * lineWrapLimit);
+                    else
+                        s = line.substring(i * lineWrapLimit, (i + 1) * lineWrapLimit);
+                    int j = s.lastIndexOf(" ");
+                    boolean bool = s.lastIndexOf(" ") >= lineWrapLimit/2;
+                    if (j >= lineWrapLimit/2)
+                        sb.append(s, 0, j).append("\n").append(s.substring(j + 1));
+                    else
+                        sb.append(s);
+                }
+                sb.append("\n");
             }
-            int reps = 1;
-            int half = (int) (this.lineWrapLimit * 0.5);
-            for (int i : indices) {
-                System.out.println(this.lineWrapLimit * reps);
-                System.out.println(this.lineWrapLimit * reps + half);
-                System.out.println(this.lineWrapLimit * reps - half);
-                if (i == this.lineWrapLimit * reps
-                        || i <= this.lineWrapLimit * reps + half && i >= this.lineWrapLimit * reps - half) {
-                    System.out.println(true + " " + i);
-                } else System.out.println(false + " " + i);
-                reps++;
-            }
+            this.setContent(sb.toString());
         }
 
         //format string into a usable form:
@@ -104,18 +104,6 @@ public class Boxer {
                 lines.add(" " + l + " ");
             }
         } else lines.add(" " + this.content + " ");
-
-        //add wrapping
-        /*if (useLineWrap) {
-            List<String> tempList = new ArrayList<>(lines);
-            lines.clear();
-            for (int i = 0; i < tempList.size() - 1; i++) {
-                if (tempList.get(i).length() > lineWrapLimit) {
-                    lines.add(tempList.get(i).substring(0, lineWrapLimit));
-                    lines.add(tempList.get(i).substring(lineWrapLimit + 1));
-                } else lines.add(tempList.get(i));
-            }
-        }*/
 
         int len;
         if (!this.content.contains("\n"))
