@@ -6,6 +6,7 @@ import entities.Row;
 import entities.Table;
 import impl.TableByName;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @SuppressWarnings("unused")
@@ -35,5 +36,9 @@ public class TableWriter {
     public void write() {
         List<Column> columns = this.table.getColumns();
         List<Row> rows = this.table.getRows();
+
+        List<String> colNames = new ArrayList<>();
+        for (Column col : columns) colNames.add(col.getName());
+        
     }
 }

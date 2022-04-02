@@ -1,5 +1,9 @@
 package dbProfiles;
 
+import entities.Table;
+
+import java.util.List;
+
 @SuppressWarnings("unused")
 public class MySQL implements Database {
 
@@ -9,7 +13,7 @@ public class MySQL implements Database {
     private final String USER;
     private final Integer PORT;
 
-    private String tables;
+    private List<Table> tables;
 
     /**
      * @param name     What is the name of the database you want to connect to?
@@ -27,28 +31,43 @@ public class MySQL implements Database {
     }
 
 
-
+    /**
+     * @return Returns the password being used for the database connection.
+     */
     public String getPassword() {
         return PASSWORD;
     }
 
+    /**
+     * @return Returns the name of the database being used.
+     */
     public String getName() {
         return NAME;
     }
 
+    /**
+     * @return Returns the ip of the host machine.
+     */
     public String getHost() {
         return HOST;
     }
 
+    /**
+     * @return returns the username being used for the connection.
+     */
     public String getUser() {
         return USER;
     }
 
+    /**
+     * @return returns the port that the database is running on.
+     */
     public Integer getPort() {
         return PORT;
     }
 
-    public String getTables() {
+    @Override
+    public List<Table> getTables() {
         return tables;
     }
 

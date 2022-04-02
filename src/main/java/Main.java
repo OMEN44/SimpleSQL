@@ -2,78 +2,76 @@ import connectors.Connector;
 import connectors.InitConnection;
 import dbProfiles.MySQL;
 import dbProfiles.SQLite;
+import entities.Cell;
 import entities.Column;
+import entities.Row;
 import entities.Table;
-import impl.*;
-import logger.Boxer;
-import logger.EntityNotUniqueException;
-import logger.MissingColumnException;
-import logger.TableUnassignedException;
-
-import java.util.List;
+import impl.CreateCell;
+import impl.CreateColumn;
+import impl.Datatype;
 
 public class Main {
 
-    public static void main(String[] args) throws Boxer.NoContentException {
-
-        Boxer boxer = new Boxer();
-        boxer.setContent("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt\n" +
-                "ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco\n" +
-                "laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in\n" +
-                "voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat\n" +
-                " non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.")
-                .enableLineWrap(40).write();
-        boxer.setContent("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt\n" +
-                        "ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco\n" +
-                        "laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in\n" +
-                        "voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat\n" +
-                        " non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.")
-                .disableLineWrap().write();
+    public static void main(String[] args) {
 
         /*SQLite sqLite = new SQLite(
                 "testing",
                 "C:\\Users\\huons\\Documents\\JavaPrograms\\SimpleSQL\\database"
         );
 
+        MySQL indroCraft = new MySQL(
+                3306,
+                "Indrocraft",
+                "192.168.50.128",
+                "omen",
+                "Minecraft$44"
+        );
+
         MySQL mySQL = new MySQL(
                 3306,
-                "testingdb",
+                "test",
                 "localhost",
                 "root",
                 ""
         );
 
-        Connector conn = new InitConnection(sqLite);
+        Connector conn = new InitConnection(mySQL);
 
-        System.out.println
-                (new CreatePrimaryColumn(
-                        "UUID", Datatype.INT, null, false, false, true).isPrimary());
+        Table results = conn.executeQuery("SELECT * FROM players");
 
-        new CreateTable(
-                "main_table",
-                new CreatePrimaryColumn(
-                        "UUID", Datatype.INT, null, false, false, true),
-                new CreateColumn(
-                        "name", Datatype.VARCHAR, "huon", true, false, false),
-                new CreateColumn(
-                        "days", Datatype.INT)
-        ).write(conn);
+        Table results1 = conn.executeQuery("SELECT * FROM hometable");
 
-        Table table = new CreateTable(
-                "players",
-                new CreateColumn(
-                        "house", Datatype.VARCHAR, null, true, true, false),
-                new CreateColumn(
-                        "points", Datatype.INT)
-        ).write(conn);
+        for (Row row : results.getRows()) for (Cell cell : row.getCells()) System.out.println(cell.getColumn());
 
-        new CreateColumn(
-                "number", Datatype.INT, null, false, true, true
-        ).setParentTable(table).write(conn);
+        for (Row row : results1.getRows()) for (Cell cell : row.getCells()) System.out.println(cell.getColumn());*/
 
-        Table table1 = new TableByName(conn, "main_table");
+        Column column = new CreateColumn(
+                "UUID",
+                Datatype.VARCHAR
+        );
 
-        Table table2 = new TableByName(conn, "players");
-        List<Column> columns = table2.getColumns();*/
+        column.setCells(new CreateCell(
+                Datatype.VARCHAR,
+                "Hello!",
+                column,
+                false,
+                false
+        ),
+                new CreateCell(
+                        Datatype.VARCHAR,
+                        "I am OMEN44",
+                        column,
+                        false,
+                        false
+                ),
+                new CreateCell(
+                        Datatype.VARCHAR,
+                        "This is the best party!",
+                        column,
+                        false,
+                        false
+                ));
+
+        System.out.println(column);
     }
 }

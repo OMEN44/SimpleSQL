@@ -1,6 +1,7 @@
 package connectors;
 
 import dbProfiles.Database;
+import entities.Table;
 import logger.Logger;
 
 import java.sql.Connection;
@@ -69,8 +70,7 @@ public interface Connector {
      */
     void executeUpdate(String sqlStatement, Object... parameters);
 
-    @Deprecated(since = "experimental, unfinished")
-    List<Object> executeQuery(String sqlStatement, Object... parameters);
+    Table executeQuery(String sqlStatement, Object... parameters);
 
     enum Status {
         NOT_READY,

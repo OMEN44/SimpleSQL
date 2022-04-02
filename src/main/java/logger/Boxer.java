@@ -11,8 +11,10 @@ public class Boxer {
     //                               0   1     2     3     4     5     6     7     8     9     10
     public final static char[] c = {'╝','╗',  '╔',  '╚',  '╣',  '╩',  '╦',  '╠',  '═',  '║',  '╬'};
     public final static int[] i = {9565, 9559, 9556, 9562, 9571, 9577, 9574, 9568, 9552, 9553, 9580};
+    private final char[] corners = {'╔', '╗', '╝', '╚'};
+    private boolean boxBuilt = false;
     private String output;
-    private String content;
+    private Object content;
     //title
     private boolean hasTitle = false;
     private String title;
@@ -24,6 +26,8 @@ public class Boxer {
     //line wrapper
     private boolean useLineWrap = false;
     private int lineWrapLimit = 20;
+    //column builder
+    private final List<Object> objects;
 
 
     public enum Alignment {
@@ -41,11 +45,19 @@ public class Boxer {
     public Boxer() {
         this.output = null;
         this.content = null;
+        this.objects = null;
     }
 
-    public Boxer(String content) {
+    public Boxer(Object content) {
         this.output = null;
         this.content = content;
+        this.objects = null;
+    }
+
+    public Boxer(List<Object> content) {
+        this.output = null;
+        this.content = null;
+        this.objects = content;
     }
 
     public Boxer setContent(String content) {
@@ -53,27 +65,33 @@ public class Boxer {
         return this;
     }
 
-    public String getContent() {
+    public Object getContent() {
         return this.content;
     }
 
-    public String getOutput() throws NoContentException {
-        this.buildBox();
+    public String getOutput() {
+        if (this.content == null)
+            this.buildColumn();
+        else if (this.objects == null)
+            this.buildBox();
         return this.output;
     }
 
-    public void write() throws NoContentException {
-        this.buildBox();
+    public void write() {
+        if (this.content == null)
+            this.buildColumn();
+        else if (this.objects == null)
+            this.buildBox();
         System.out.println(this.output);
     }
 
-    public void buildBox() throws NoContentException {
-        if (this.content == null) throw new NoContentException();
+    public void buildBox() {
+        if (this.content == null) throw new IllegalArgumentException("Box is missing content.");
 
         //add line wrapping
         if (useLineWrap) {
             List<String> lines = new ArrayList<>();
-            Collections.addAll(lines, this.content.split("\n"));
+            Collections.addAll(lines, this.content.toString().split("\n"));
             StringBuilder sb = new StringBuilder();
             for (String line : lines) {
                 for (int i = 0; i < line.length()/lineWrapLimit + 1; i++) {
@@ -96,8 +114,8 @@ public class Boxer {
 
         //format string into a usable form:
         List<String> lines = new ArrayList<>();
-        if (this.content.contains("\n")) {
-            for (String l : this.content.split("\n")) {
+        if (this.content.toString().contains("\n")) {
+            for (String l : this.content.toString().split("\n")) {
                 if (l.length() % 2 != 0) {
                     l = l + " ";
                 }
@@ -106,8 +124,8 @@ public class Boxer {
         } else lines.add(" " + this.content + " ");
 
         int len;
-        if (!this.content.contains("\n"))
-            len = this.content.length() + 2;
+        if (!this.content.toString().contains("\n"))
+            len = this.content.toString().length() + 2;
         else {
             String longest = "";
             for (String line : lines)
@@ -126,29 +144,29 @@ public class Boxer {
             if (title.length() > len)
                 len = title.length();
             switch (titleAlignment) {
-                case TOP_LEFT -> top.append(c[2])
+                case TOP_LEFT -> top.append(this.corners[0])
                         .append(title)
                         .append(String.valueOf(c[8]).repeat(len - title.length()))
-                        .append(c[1])
+                        .append(this.corners[1])
                         .append("\n");
                 case TOP -> {
                     if (title.length() % 2 != 0)
                         title = title + c[8];
-                    top.append(c[2])
+                    top.append(this.corners[0])
                             .append(String.valueOf(c[8]).repeat((len - title.length())/2))
                             .append(title)
                             .append(String.valueOf(c[8]).repeat((len - title.length())/2))
-                            .append(c[1])
+                            .append(this.corners[1])
                             .append("\n");
                 }
-                case TOP_RIGHT -> top.append(c[2])
+                case TOP_RIGHT -> top.append(this.corners[0])
                         .append(String.valueOf(c[8]).repeat(len - title.length()))
                         .append(title)
-                        .append(c[1])
+                        .append(this.corners[1])
                         .append("\n");
                 default -> throw new IllegalArgumentException("Title cannot be on bottom row.");
             }
-        } else top.append(c[2]).append(String.valueOf(c[8]).repeat(len)).append(c[1]).append("\n");
+        } else top.append(this.corners[0]).append(String.valueOf(c[8]).repeat(len)).append(this.corners[1]).append("\n");
 
         //make footer:
         if (hasFooter) {
@@ -156,29 +174,26 @@ public class Boxer {
             if (footer.length() > len)
                 len = footer.length();
             switch (titleFooter) {
-                case BOTTOM_LEFT -> bottom.append(c[3])
+                case BOTTOM_LEFT -> bottom.append(this.corners[3])
                         .append(footer)
                         .append(String.valueOf(c[8]).repeat(len - footer.length()))
-                        .append(c[0])
-                        .append("\n");
+                        .append(this.corners[2]);
                 case BOTTOM -> {
                     if (footer.length() % 2 != 0)
                         footer = footer + c[8];
-                    bottom.append(c[3])
+                    bottom.append(this.corners[3])
                             .append(String.valueOf(c[8]).repeat((len - footer.length())/2))
                             .append(footer)
                             .append(String.valueOf(c[8]).repeat((len - footer.length())/2))
-                            .append(c[0])
-                            .append("\n");
+                            .append(this.corners[2]);
                 }
-                case BOTTOM_RIGHT -> bottom.append(c[3])
+                case BOTTOM_RIGHT -> bottom.append(this.corners[3])
                         .append(String.valueOf(c[8]).repeat(len - footer.length()))
                         .append(footer)
-                        .append(c[0])
-                        .append("\n");
+                        .append(this.corners[2]);
                 default -> throw new IllegalArgumentException("Footer cannot be on top row.");
             }
-        } else bottom.append(c[3]).append(String.valueOf(c[8]).repeat(len)).append(c[0]);
+        } else bottom.append(this.corners[3]).append(String.valueOf(c[8]).repeat(len)).append(this.corners[2]);
 
         //make body:
         for (String line : lines) {
@@ -198,6 +213,7 @@ public class Boxer {
             output.append(sb);
         output.append(bottom);
         this.output = output.toString();
+        this.boxBuilt = true;
     }
 
     public Boxer addTitle(String title, Alignment alignment) {
@@ -288,13 +304,73 @@ public class Boxer {
         System.out.println(sb);
     }
 
+    public boolean isBoxBuilt() {
+        return this.boxBuilt;
+    }
+
+    //Table building methods
+    public char[] getCorners() {
+        return this.corners;
+    }
+
+    public Boxer setCorner(char newCorner, Alignment alignment) {
+        switch (alignment) {
+            case TOP_LEFT -> this.corners[0] = newCorner;
+            case TOP_RIGHT -> this.corners[1] = newCorner;
+            case BOTTOM_RIGHT -> this.corners[2] = newCorner;
+            case BOTTOM_LEFT -> this.corners[3] = newCorner;
+            default -> throw new IllegalArgumentException("The alignment provided is not a corner alignment");
+        }
+        return this;
+    }
+
+    public static class BoxNotBuiltException extends Exception {
+        public BoxNotBuiltException() {
+            super();
+        }
+        public BoxNotBuiltException(String message) {
+            super(message);
+        }
+    }
+
     public static class NoContentException extends Exception {
         public NoContentException() {
             super();
         }
-
         public NoContentException(String message) {
             super(message);
         }
+    }
+
+    @Override
+    public String toString() {
+        this.buildBox();
+        return this.output;
+    }
+
+    public static String addSpace(String s, int length) {
+        if (s.length() < length) {
+            System.out.println("true");
+            if (s.length() % 2 != 0)
+                s = s + " ";
+            StringBuilder sBuilder = new StringBuilder(s);
+            int reps = length - sBuilder.length();
+            for (int j = 0; j < length - sBuilder.length(); j++) {
+                System.out.println(j);
+                System.out.println(reps + " | " + (length - sBuilder.length()) + " | " + sBuilder.length());
+                sBuilder = new StringBuilder(" " + sBuilder + " ");
+            }
+            s = sBuilder.toString();
+            return s;
+        }
+        return s;
+    }
+
+    public void buildColumn() {
+        StringBuilder head = new StringBuilder();
+        StringBuilder body = new StringBuilder();
+        StringBuilder tail = new StringBuilder();
+
+
     }
 }

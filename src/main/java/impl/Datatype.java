@@ -14,7 +14,12 @@ public enum Datatype {
     INT,
     FLOAT,
     DOUBLE,
-    DATE;
+    DATE,
+    /**
+     * {@code Datatype.OBJECT} is used as a placeholder for result sets and may result in errors if used to write to a
+     * database
+     */
+    OBJECT;
 
     private Integer size;
 
@@ -33,6 +38,7 @@ public enum Datatype {
             case FLOAT -> "FLOAT";
             case DOUBLE -> "DOUBLE";
             case DATE -> "DATE";
+            case OBJECT -> null;
         };
     }
 }

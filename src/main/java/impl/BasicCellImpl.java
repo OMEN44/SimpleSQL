@@ -6,23 +6,17 @@ import entities.Table;
 import entities.BasicCell;
 import entities.Cell;
 import entities.Column;
+import logger.Boxer;
 import logger.TableUnassignedException;
 
 @SuppressWarnings("unused")
 public class BasicCellImpl implements BasicCell {
     private final Datatype DATATYPE;
     private final Object DATA;
-    private Table table;
 
     public BasicCellImpl(Datatype datatype, Object data) {
         this.DATATYPE = datatype;
         this.DATA = data;
-    }
-
-    public BasicCellImpl(Datatype datatype, Object data, Table table) {
-        this.DATATYPE = datatype;
-        this.DATA = data;
-        this.table = table;
     }
 
     @Override
@@ -32,22 +26,19 @@ public class BasicCellImpl implements BasicCell {
 
     @Override
     public Table getParentTable() throws TableUnassignedException {
-        if (this.table == null) {
-            throw new TableUnassignedException("Table was not assigned while creating this cell.");
-        } else {
-            return this.table;
-        }
+        System.out.println("This object cannot be written to a table. Use the method toCell to do this.");
+        return null;
     }
 
     @Override
     public HasTable setParentTable(Table table) {
-        this.table = table;
-        return this;
+        System.out.println("This object cannot be written to a table. Use the method toCell to do this.");
+        return null;
     }
 
     @Override
-    public void write(Connector conn) throws TableUnassignedException {
-
+    public void write(Connector conn) {
+        System.out.println("This object cannot be written to a table. Use the method toCell to do this.");
     }
 
     @Override
@@ -62,5 +53,12 @@ public class BasicCellImpl implements BasicCell {
 
     public Cell toCell(Column column, boolean isUnique, boolean isPrimary) {
         return new CreateCell(this.DATATYPE, this.DATA, column, isUnique, isPrimary);
+    }
+
+    @Override
+    public String toString() {
+        Boxer boxer = new Boxer(this.DATA.toString()).addFooter(this.DATATYPE.toString());
+        boxer.buildBox();
+        return boxer.getOutput();
     }
 }

@@ -42,4 +42,6 @@ public interface Column extends HasTable {
      * @return There can only be one primary column.
      */
     boolean isPrimary();
+
+    Column setCells(Cell... cells);
 }

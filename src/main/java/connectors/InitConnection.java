@@ -3,6 +3,11 @@ package connectors;
 import dbProfiles.Database;
 import dbProfiles.MySQL;
 import dbProfiles.SQLite;
+import entities.Cell;
+import entities.Column;
+import entities.Row;
+import entities.Table;
+import impl.*;
 import logger.Logger;
 
 import java.io.File;
@@ -147,10 +152,11 @@ public class InitConnection implements Connector {
     }
 
     @Override
-    public List<Object> executeQuery(String sqlStatement, Object... parameters) {
+    public Table executeQuery(String sqlStatement, Object... parameters) {
         Connection conn = null;
         PreparedStatement ps = null;
-        List<Object> results = new ArrayList<>();
+        List<Column> columns = new ArrayList<>();
+        List<Row> rows = new ArrayList<>();
         try {
             conn = getSQLConnection();
             if (conn != null) {
@@ -161,9 +167,27 @@ public class InitConnection implements Connector {
                     index++;
                 }
                 ResultSet rs = ps.executeQuery();
+                int colCount = rs.getMetaData().getColumnCount();
+                for (int i = 1; i <= colCount; i++)
+                    columns.add(new CreateColumn(
+                            rs.getMetaData().getColumnName(i),
+                            Datatype.OBJECT
+                    ));
                 int i = 1;
                 while (rs.next()) {
-                    System.out.println(i);
+                    //System.out.println(i);
+                    List<Cell> cells = new ArrayList<>();
+                    for (Column col : columns)
+                        cells.add(new CreateCell(
+                                Datatype.OBJECT,
+                                rs.getObject(col.getName()),
+                                col,
+                                false,
+                                false
+                        ));
+                    rows.add(new CreateRow(
+                            cells.toArray(new Cell[0])
+                    ));
                     i++;
                 }
             }
@@ -172,6 +196,10 @@ public class InitConnection implements Connector {
         } finally {
             Connector.disconnector(conn, ps);
         }
-        return results;
+
+        return new CreateTable(
+                "Result set",
+                columns.toArray(new Column[0])
+        ).setRows(rows.toArray(new Row[0]));
     }
 }

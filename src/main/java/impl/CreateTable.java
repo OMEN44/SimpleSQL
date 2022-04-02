@@ -2,7 +2,7 @@ package impl;
 
 import connectors.Connector;
 import entities.Column;
-import entities.PrimaryKey;
+import entities.PrimaryColumn;
 import entities.Row;
 import entities.Table;
 import logger.EntityNotUniqueException;
@@ -15,9 +15,10 @@ import java.util.List;
 public class CreateTable implements Table {
     private final String NAME;
     private final List<Column> COLUMNS;
-    private PrimaryKey PRIMARY_COLUMN;
+    private List<Row> rows;
+    private PrimaryColumn PRIMARY_COLUMN;
 
-    public CreateTable(String name, PrimaryKey primaryColumn, Column... columns) throws EntityNotUniqueException {
+    public CreateTable(String name, PrimaryColumn primaryColumn, Column... columns) throws EntityNotUniqueException {
         this.NAME = name;
         if (primaryColumn.isPrimary())
             this.PRIMARY_COLUMN = primaryColumn;
@@ -33,7 +34,7 @@ public class CreateTable implements Table {
 
     public Table write(Connector connector) {
         //check if the table has a primary column:
-        PrimaryKey priColumn = this.getPrimaryColumn();
+        PrimaryColumn priColumn = this.getPrimaryColumn();
 
         //this list will contain the columns being added in query form e.g. name VARCHAR(100) UNIQUE,
         List<StringBuilder> columnTemps = new ArrayList<>();
@@ -71,8 +72,6 @@ public class CreateTable implements Table {
         if (priColumn == null)
             finalParams = finalParams.substring(2);
 
-        System.out.println("CREATE TABLE IF NOT EXISTS " + this.getName() + "(" + finalParams + ")");
-
         connector.executeUpdate("CREATE TABLE IF NOT EXISTS " + this.getName() + "(" + finalParams + ")");
         return this;
     }
@@ -88,7 +87,7 @@ public class CreateTable implements Table {
     }
 
     @Override
-    public PrimaryKey getPrimaryColumn() {
+    public PrimaryColumn getPrimaryColumn() {
         return this.PRIMARY_COLUMN;
     }
 
@@ -106,13 +105,26 @@ public class CreateTable implements Table {
     @Override
     public List<Column> getColumns() {
         List<Column> columns = new ArrayList<>(this.COLUMNS);
-        columns.add(this.PRIMARY_COLUMN);
+        if (this.PRIMARY_COLUMN != null)
+            columns.add(this.PRIMARY_COLUMN);
         return columns;
     }
 
     @Override
     public List<Row> getRows() {
-        System.err.println("This table object was created and does not contain rows. Use TableByName#getRows");
+        if (this.rows != null) return rows;
+        else System.err.println("This table object was created and does not contain rows. Use TableByName#getRows");
         return null;
+    }
+
+    @Override
+    public Table setRows(Row... rows) {
+        this.rows = Arrays.stream(rows).toList();
+        return this;
+    }
+
+    @Override
+    public String toString() {
+        return "table";
     }
 }

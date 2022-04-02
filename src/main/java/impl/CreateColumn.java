@@ -2,8 +2,10 @@ package impl;
 
 import connectors.Connector;
 import entities.*;
+import logger.Boxer;
 import logger.TableUnassignedException;
 
+import java.util.Arrays;
 import java.util.List;
 
 @SuppressWarnings("unused")
@@ -83,6 +85,12 @@ public class CreateColumn implements Column {
     }
 
     @Override
+    public Column setCells(Cell... cells) {
+        this.cells = Arrays.stream(cells).toList();
+        return this;
+    }
+
+    @Override
     public String getName() {
         return this.NAME;
     }
@@ -110,5 +118,45 @@ public class CreateColumn implements Column {
     @Override
     public boolean isPrimary() {
         return this.PRIMARY_KEY;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder output;
+        Boxer boxer = new Boxer();
+        try {
+            if (this.parentTable != null) boxer.addTitle(getParentTable().getName());
+        } catch (TableUnassignedException e) {
+            e.printStackTrace();
+        }
+        if (this.cells == null) {
+            boxer.setContent(this.NAME);
+            boxer.buildBox();
+            output = new StringBuilder(boxer.getOutput());
+        } else {
+            //get the longest cell length
+            int length = this.NAME.length();
+            for (Cell cell : this.cells) {
+                if (length < cell.getData().toString().length()) length = cell.getData().toString().length();
+            }
+            System.out.println("length | " + length);
+
+            boxer.setCorner(Boxer.c[7], Boxer.Alignment.BOTTOM_LEFT)
+                    .setCorner(Boxer.c[4], Boxer.Alignment.BOTTOM_RIGHT)
+                    .setContent(Boxer.addSpace(this.NAME, length))
+                    .buildBox();
+            output = new StringBuilder(boxer.getOutput());
+            for (Cell cell : this.cells) {
+                String data = cell.getData().toString();
+                int i = data.length();
+                data = Boxer.addSpace(data, length);
+                System.out.println("actual | " + data.length() + "\n" +
+                        "length | " + length);
+                boxer = new Boxer(data);
+                boxer.buildBox();
+                output.append(boxer.getOutput().substring(boxer.getOutput().split("\n")[0].length()));
+            }
+        }
+        return output.toString();
     }
 }

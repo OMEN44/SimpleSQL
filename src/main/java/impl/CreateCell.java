@@ -4,6 +4,7 @@ import entities.HasTable;
 import entities.Table;
 import entities.Cell;
 import entities.Column;
+import logger.Boxer;
 import logger.TableUnassignedException;
 
 @SuppressWarnings("unused")
@@ -66,5 +67,16 @@ public class CreateCell extends BasicCellImpl implements Cell {
     @Override
     public Datatype getDatatype() {
         return DATATYPE;
+    }
+
+    @Override
+    public String toString() {
+        Boxer boxer = new Boxer(this.DATA.toString());
+        String title = this.COLUMN.getName();
+        if (this.parentTable != null)
+            title = this.parentTable.getName() + "." + title;
+        boxer.addTitle(title).addFooter(this.DATATYPE.toString());
+        boxer.buildBox();
+        return boxer.getOutput();
     }
 }
