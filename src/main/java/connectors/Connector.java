@@ -1,26 +1,25 @@
 package connectors;
 
-import dbProfiles.Database;
+import connectors.dbProfiles.Database;
+import entities.Entity;
 import entities.Table;
 import logger.Logger;
+import logger.TableUnassignedException;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.util.List;
 
+/**
+ * the {@code Connector} is the actual connection to the database and requires a
+ */
 @SuppressWarnings("unused")
 public interface Connector {
 
-    enum ConnectionType {
-        SQLITE,
-        MYSQL
-    }
-
     /**
-     * @return Returns the {@link ConnectionType} that is in use with the current connection.
+     * @return Returns the {@link connectors.dbProfiles.Database.DatabaseType} that is in use with the current connection.
      */
-    ConnectionType connectorType();
+    Database.DatabaseType databaseType();
 
     /**
      * @return If the SQL connection is currently up or is connecting.
@@ -71,6 +70,8 @@ public interface Connector {
     void executeUpdate(String sqlStatement, Object... parameters);
 
     Table executeQuery(String sqlStatement, Object... parameters);
+
+    void writeToDatabase(Entity entity) throws TableUnassignedException;
 
     enum Status {
         NOT_READY,

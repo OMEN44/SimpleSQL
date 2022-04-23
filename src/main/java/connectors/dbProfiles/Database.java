@@ -1,4 +1,4 @@
-package dbProfiles;
+package connectors.dbProfiles;
 
 import entities.Table;
 
@@ -9,15 +9,15 @@ public interface Database {
     /**
      * This enum is used for identifying what type of database is running and as more are supported it will be updated.
      */
-    enum databaseType {
-        MySQL,
-        SQLite
+    enum DatabaseType {
+        MYSQL,
+        SQLITE
     }
 
     /**
      * @return returns the type of database being used.
      */
-    databaseType getDatabaseType();
+    DatabaseType getDatabaseType();
 
     /**
      * @return returns the URL being used by jdbc to connect to the database.
@@ -34,15 +34,17 @@ public interface Database {
      */
     List<Table> getTables();
 
+
+
     /**
      * @param database Database object being tested.
-     * @return returns the {@link databaseType} of the target database.
+     * @return returns the {@link DatabaseType} of the target database.
      */
-    default databaseType getDatabaseType(Database database) {
+    default DatabaseType getDatabaseType(Database database) {
         if (database instanceof MySQL) {
-            return databaseType.MySQL;
+            return DatabaseType.MYSQL;
         } else if (database instanceof SQLite) {
-            return databaseType.SQLite;
+            return DatabaseType.SQLITE;
         } else {
             return null;
         }

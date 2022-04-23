@@ -8,7 +8,7 @@ SQL library for using MySQL and SQLite. Uses objects to improve usability instea
 ```java
 import connectors.Connector;
 import connectors.InitConnection;
-import dbProfiles.MySQL;
+import connectors.dbProfiles.MySQL;
 
 public class Main {
     public static void main(String[] args) {
@@ -22,13 +22,13 @@ public class Main {
         );
 
         Connector mySqlConn = new InitConnection(mySQL);
-        
+
         //SQLite connection:
         SQLite sqLite = new SQLite(
                 "testing",
                 "C:\\JavaPrograms\\database"
         );
-        
+
         Connector sqliteConn = new InitConnection(sqLite);
     }
 }

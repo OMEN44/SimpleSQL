@@ -1,4 +1,4 @@
-package dbProfiles;
+package connectors.dbProfiles;
 
 import entities.Table;
 
@@ -48,8 +48,8 @@ public class SQLite implements Database {
     }
 
     @Override
-    public databaseType getDatabaseType() {
-        return databaseType.SQLite;
+    public DatabaseType getDatabaseType() {
+        return DatabaseType.SQLITE;
     }
 
     @Override

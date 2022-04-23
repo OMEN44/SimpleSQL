@@ -1,4 +1,4 @@
-package dbProfiles;
+package connectors.dbProfiles;
 
 import entities.Table;
 
@@ -72,8 +72,8 @@ public class MySQL implements Database {
     }
 
     @Override
-    public databaseType getDatabaseType() {
-        return databaseType.MySQL;
+    public DatabaseType getDatabaseType() {
+        return DatabaseType.MYSQL;
     }
 
     @Override
