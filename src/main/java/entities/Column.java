@@ -4,6 +4,9 @@ import impl.Datatype;
 
 import java.util.List;
 
+/**
+ * @apiNote This object mainly contains a list of cells and similarly to cells also contains uniqueness constraints
+ */
 @SuppressWarnings("unused")
 public interface Column extends HasTable {
 

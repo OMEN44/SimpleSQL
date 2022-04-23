@@ -1,10 +1,10 @@
 package entities;
 
-import logger.EntityNotUniqueException;
-import logger.TableUnassignedException;
-
 import java.util.List;
 
+/**
+ * Rows are a list of cells that can have a range of constrains and has no identifying name.
+ */
 @SuppressWarnings("unused")
 public interface Row extends HasTable {
     /**

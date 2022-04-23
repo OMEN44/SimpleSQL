@@ -1,12 +1,15 @@
 package entities;
 
+import connectors.Connector;
 import logger.SimpleSQLException;
 
 /**
- * @apiNote Core for all the objects in this library. these objects are what build up a table.
+ * @apiNote Core for all the objects in this library. {@code Entity} provides basic structure for all the database
+ * objects used.
  */
 @SuppressWarnings("unused")
 public interface Entity {
+
     /**
      * This enum is a list of identifiers for the different entities.
      */
