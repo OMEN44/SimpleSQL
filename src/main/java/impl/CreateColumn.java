@@ -1,14 +1,13 @@
 package impl;
 
-import connectors.Connector;
 import connectors.Datatype;
 import entities.*;
-import logger.Boxer;
 import logger.TableUnassignedException;
 
 import javax.annotation.Nonnull;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 @SuppressWarnings("unused")
 public class CreateColumn implements Column {
@@ -41,25 +40,6 @@ public class CreateColumn implements Column {
         this.NOT_NULL = false;
         this.IS_UNIQUE = false;
         this.PRIMARY_KEY = false;
-    }
-
-    public void write(Connector connector) throws TableUnassignedException {
-        //check if column has a table:
-        Table table = this.getParentTable();
-        String query = "ALTER TABLE `" + table.getName() + "` ADD `" + this.getName() +
-                "` " + this.getDatatype().toString();
-        if (this.NOT_NULL)
-            query = query + " NOT NULL";
-        else
-            query = query + " NULL";
-
-        if (this.PRIMARY_KEY)
-            query = query + ", ADD PRIMARY KEY (`" + this.getName() + "`)";
-        else if (this.IS_UNIQUE)
-            query = query + ", ADD UNIQUE (`" + this.getName() + "`)";
-
-        System.out.println(query);
-        connector.executeUpdate(query);
     }
 
     @Nonnull
@@ -129,41 +109,6 @@ public class CreateColumn implements Column {
 
     @Override
     public String toString() {
-        StringBuilder output;
-        Boxer boxer = new Boxer();
-        try {
-            if (this.parentTable != null) boxer.addTitle(getParentTable().getName());
-        } catch (TableUnassignedException e) {
-            e.printStackTrace();
-        }
-        if (this.cells == null) {
-            boxer.setContent(this.NAME);
-            boxer.buildBox();
-            output = new StringBuilder(boxer.getOutput());
-        } else {
-            //get the longest cell length
-            int length = this.NAME.length();
-            for (Cell cell : this.cells) {
-                if (length < cell.getData().toString().length()) length = cell.getData().toString().length();
-            }
-            System.out.println("length | " + length);
-
-            boxer.setCorner(Boxer.c[7], Boxer.Alignment.BOTTOM_LEFT)
-                    .setCorner(Boxer.c[4], Boxer.Alignment.BOTTOM_RIGHT)
-                    .setContent(Boxer.addSpace(this.NAME, length))
-                    .buildBox();
-            output = new StringBuilder(boxer.getOutput());
-            for (Cell cell : this.cells) {
-                String data = cell.getData().toString();
-                int i = data.length();
-                data = Boxer.addSpace(data, length);
-                System.out.println("actual | " + data.length() + "\n" +
-                        "length | " + length);
-                boxer = new Boxer(data);
-                boxer.buildBox();
-                output.append(boxer.getOutput().substring(boxer.getOutput().split("\n")[0].length()));
-            }
-        }
-        return output.toString();
+        return this.getName();
     }
 }

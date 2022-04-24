@@ -1,9 +1,9 @@
 package impl;
 
+import com.github.OMEN44.boxer.Boxer;
 import connectors.Connector;
 import connectors.Datatype;
 import entities.*;
-import logger.Boxer;
 import logger.EntityNotUniqueException;
 import logger.TableUnassignedException;
 

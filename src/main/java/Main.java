@@ -36,18 +36,18 @@ public class Main {
                 ""
         );
 
-        Connector conn = new InitConnection(indroCraft);
+        Connector conn = new InitConnection(sqLite);
         conn.debugMode(true);
 
         Table testGetter = new TableByName(conn, "Schools");
-        /*for (Column col : testGetter.getColumns()) {
+        for (Column col : testGetter.getColumns()) {
             System.out.print(col.getName() + " (");
             System.out.print(col.isPrimary() + "):");
             System.out.println();
             for (Cell cel : Objects.requireNonNull(col.getCells())) {
                 System.out.println(cel);
             }
-        }*/
+        }
 
         Column schoolName = new CreatePrimaryColumn("schoolName", Datatype.VARCHAR);
         Column location = new CreateColumn("location", Datatype.VARCHAR, "", false, true, false);

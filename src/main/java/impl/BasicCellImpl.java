@@ -1,8 +1,8 @@
 package impl;
 
+import com.github.OMEN44.boxer.Boxer;
 import connectors.Datatype;
 import entities.*;
-import logger.Boxer;
 import logger.TableUnassignedException;
 
 import javax.annotation.Nonnull;

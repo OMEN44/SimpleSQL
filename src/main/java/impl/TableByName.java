@@ -1,9 +1,11 @@
 package impl;
 
 import connectors.Connector;
-import connectors.Datatype;
 import connectors.dbProfiles.Database;
-import entities.*;
+import entities.Column;
+import entities.PrimaryColumn;
+import entities.Row;
+import entities.Table;
 import logger.MissingColumnException;
 
 import javax.annotation.Nonnull;
@@ -11,7 +13,6 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
 
 @SuppressWarnings("unused")
 public class TableByName implements Table {

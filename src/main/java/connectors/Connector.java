@@ -10,7 +10,6 @@ import logger.TableUnassignedException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.util.List;
 
 /**
  * the {@code Connector} is the actual connection to the database and requires a
