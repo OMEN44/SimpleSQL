@@ -3,12 +3,14 @@ package connectors;
 import connectors.dbProfiles.Database;
 import entities.Entity;
 import entities.Table;
+import logger.EntityNotUniqueException;
 import logger.Logger;
 import logger.TableUnassignedException;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.List;
 
 /**
  * the {@code Connector} is the actual connection to the database and requires a
@@ -69,9 +71,19 @@ public interface Connector {
      */
     void executeUpdate(String sqlStatement, Object... parameters);
 
+    /**
+     * @param sqlStatement Statement to be executed, unknown values are to be represented with a '?'.
+     * @param parameters Objects to be inserted into the prepared statement in the order they should appear.
+     * @return Returns the results in the form of a table.
+     * @apiNote This method adds result cells to rows not columns. You must iterate through rows not columns.
+     */
     Table executeQuery(String sqlStatement, Object... parameters);
 
-    void writeToDatabase(Entity entity) throws TableUnassignedException;
+    void writeToDatabase(Entity... entity) throws TableUnassignedException, EntityNotUniqueException;
+
+    void debugMode(boolean b);
+
+    boolean isDebugMode();
 
     enum Status {
         NOT_READY,

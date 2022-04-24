@@ -1,11 +1,13 @@
 package impl;
 
-import entities.HasTable;
-import entities.Table;
-import entities.Cell;
-import entities.Column;
+import connectors.Connector;
+import connectors.Datatype;
+import entities.*;
 import logger.Boxer;
+import logger.EntityNotUniqueException;
 import logger.TableUnassignedException;
+
+import javax.annotation.Nonnull;
 
 @SuppressWarnings("unused")
 public class CreateCell extends BasicCellImpl implements Cell {
@@ -15,6 +17,7 @@ public class CreateCell extends BasicCellImpl implements Cell {
     private final Object DATA;
     private final Column COLUMN;
     private Table parentTable;
+    private Cell rowIdentifier;
 
     public CreateCell(Datatype datatype, Object data, Column column, boolean isUnique, boolean isPrimary) {
         super(datatype, data);
@@ -25,28 +28,73 @@ public class CreateCell extends BasicCellImpl implements Cell {
         this.IS_PRIMARY = isPrimary;
     }
 
+    public CreateCell(Datatype datatype, Object data, Column column) {
+        super(datatype, data);
+        this.DATATYPE = datatype;
+        this.DATA = data;
+        this.COLUMN = column;
+        this.IS_UNIQUE = false;
+        this.IS_PRIMARY = false;
+    }
+
+    @Nonnull
     @Override
-    public instanceType getObjectType() {
-        return instanceType.CELL;
+    public InstanceType getEntityType() {
+        return InstanceType.CELL;
     }
 
     @Override
     public Table getParentTable() throws TableUnassignedException {
         if (parentTable == null) {
-            throw new TableUnassignedException("Parent table has not been set for this object. ", this.getObjectType());
+            throw new TableUnassignedException("Parent table has not been set for this object. ", this.getEntityType());
         }
         return parentTable;
     }
 
+    @Nonnull
     @Override
-    public HasTable setParentTable(Table table) {
+    public Entity setParentTable(Table table) {
         this.parentTable = table;
         return this;
     }
 
+    @Nonnull
     @Override
     public Column getColumn() {
         return this.COLUMN;
+    }
+
+    @Nonnull
+    @Override
+    public Row getRow() {
+        return null;
+    }
+
+    @Nonnull
+    @Override
+    public Cell setRowIdentifier(@Nonnull Cell uniqueCell) throws EntityNotUniqueException {
+        if (!uniqueCell.isUnique() && !uniqueCell.isPrimary() &&
+                !uniqueCell.getColumn().isUnique() && !uniqueCell.getColumn().isPrimary())
+            throw new EntityNotUniqueException("Cell provided for row identifier must be either unique or primary");
+        this.rowIdentifier = uniqueCell;
+        return this;
+    }
+
+    @Override
+    public Cell getRowIdentifier() {
+        return this.rowIdentifier;
+    }
+
+    @Nonnull
+    @Override
+    public Column getFullColumn(Connector connector) throws TableUnassignedException {
+        if (this.parentTable == null)
+            throw new TableUnassignedException("This object requires a table to preform this action");
+        Table table = connector.executeQuery(
+                "SELECT " + this.COLUMN.getName() + " FROM " + this.parentTable.getName()
+        );
+        System.out.println(table.getColumns().get(0).getCells().size());
+        return null;
     }
 
     @Override
@@ -64,6 +112,7 @@ public class CreateCell extends BasicCellImpl implements Cell {
         return DATA;
     }
 
+    @Nonnull
     @Override
     public Datatype getDatatype() {
         return DATATYPE;
@@ -71,7 +120,11 @@ public class CreateCell extends BasicCellImpl implements Cell {
 
     @Override
     public String toString() {
-        Boxer boxer = new Boxer(this.DATA.toString());
+        Boxer boxer;
+        if (this.DATA == null)
+            boxer = new Boxer("NULL");
+        else
+            boxer = new Boxer(this.DATA.toString());
         String title = this.COLUMN.getName();
         if (this.parentTable != null)
             title = this.parentTable.getName() + "." + title;

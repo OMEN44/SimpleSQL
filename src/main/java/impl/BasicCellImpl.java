@@ -1,13 +1,11 @@
 package impl;
 
-import connectors.Connector;
-import entities.HasTable;
-import entities.Table;
-import entities.BasicCell;
-import entities.Cell;
-import entities.Column;
+import connectors.Datatype;
+import entities.*;
 import logger.Boxer;
 import logger.TableUnassignedException;
+
+import javax.annotation.Nonnull;
 
 @SuppressWarnings("unused")
 public class BasicCellImpl implements BasicCell {
@@ -19,26 +17,23 @@ public class BasicCellImpl implements BasicCell {
         this.DATA = data;
     }
 
+    @Nonnull
     @Override
-    public instanceType getObjectType() {
-        return instanceType.CELL;
+    public InstanceType getEntityType() {
+        return InstanceType.CELL;
     }
 
     @Override
     public Table getParentTable() throws TableUnassignedException {
-        System.out.println("This object cannot be written to a table. Use the method toCell to do this.");
+        System.err.println("This object cannot be written to a table. Use the method toCell to do this.");
         return null;
     }
 
+    @Nonnull
     @Override
-    public HasTable setParentTable(Table table) {
-        System.out.println("This object cannot be written to a table. Use the method toCell to do this.");
-        return null;
-    }
-
-    @Override
-    public void write(Connector conn) {
-        System.out.println("This object cannot be written to a table. Use the method toCell to do this.");
+    public Entity setParentTable(Table table) {
+        System.err.println("This object cannot be written to a table. Use the method toCell to do this.");
+        return this;
     }
 
     @Override
@@ -46,6 +41,7 @@ public class BasicCellImpl implements BasicCell {
         return this.DATA;
     }
 
+    @Nonnull
     @Override
     public Datatype getDatatype() {
         return this.DATATYPE;

@@ -1,20 +1,21 @@
 import connectors.Connector;
 import connectors.InitConnection;
-import dbProfiles.MySQL;
-import dbProfiles.SQLite;
-import entities.Cell;
-import entities.Column;
-import entities.Row;
-import entities.Table;
-import impl.CreateCell;
-import impl.CreateColumn;
-import impl.Datatype;
+import connectors.dbProfiles.MySQL;
+import connectors.dbProfiles.SQLite;
+import entities.*;
+import impl.*;
+import connectors.Datatype;
+import logger.EntityNotUniqueException;
+import logger.MissingColumnException;
+import logger.TableUnassignedException;
+
+import java.util.Objects;
 
 public class Main {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws EntityNotUniqueException, TableUnassignedException, MissingColumnException {
 
-        /*SQLite sqLite = new SQLite(
+        SQLite sqLite = new SQLite(
                 "testing",
                 "C:\\Users\\huons\\Documents\\JavaPrograms\\SimpleSQL\\database"
         );
@@ -35,43 +36,41 @@ public class Main {
                 ""
         );
 
-        Connector conn = new InitConnection(mySQL);
+        Connector conn = new InitConnection(indroCraft);
+        conn.debugMode(true);
 
-        Table results = conn.executeQuery("SELECT * FROM players");
+        Table testGetter = new TableByName(conn, "Schools");
+        /*for (Column col : testGetter.getColumns()) {
+            System.out.print(col.getName() + " (");
+            System.out.print(col.isPrimary() + "):");
+            System.out.println();
+            for (Cell cel : Objects.requireNonNull(col.getCells())) {
+                System.out.println(cel);
+            }
+        }*/
 
-        Table results1 = conn.executeQuery("SELECT * FROM hometable");
+        Column schoolName = new CreatePrimaryColumn("schoolName", Datatype.VARCHAR);
+        Column location = new CreateColumn("location", Datatype.VARCHAR, "", false, true, false);
 
-        for (Row row : results.getRows()) for (Cell cell : row.getCells()) System.out.println(cell.getColumn());
-
-        for (Row row : results1.getRows()) for (Cell cell : row.getCells()) System.out.println(cell.getColumn());*/
-
-        Column column = new CreateColumn(
-                "UUID",
-                Datatype.VARCHAR
+        Table table = new CreateTable(
+                "Schools",
+                schoolName,
+                location
         );
 
-        column.setCells(new CreateCell(
-                Datatype.VARCHAR,
-                "Hello!",
-                column,
-                false,
-                false
-        ),
-                new CreateCell(
-                        Datatype.VARCHAR,
-                        "I am OMEN44",
-                        column,
-                        false,
-                        false
-                ),
-                new CreateCell(
-                        Datatype.VARCHAR,
-                        "This is the best party!",
-                        column,
-                        false,
-                        false
-                ));
+        Column column = (Column) new CreateColumn("Students", Datatype.INT).setParentTable(table);
 
-        System.out.println(column);
+        Row row = (Row) new CreateRow(
+                new CreateCell(Datatype.VARCHAR, "Hell", location),
+                new CreateCell(Datatype.INT, "666", column)
+        ).setParentTable(table);
+
+        Cell cell = (Cell) new CreateCell(Datatype.VARCHAR, "Bad School", schoolName).setParentTable(table);
+
+        conn.writeToDatabase(table, column, row, cell.setRowIdentifier(new CreateCell(Datatype.VARCHAR, "Hell", location)));
+
+        /*Cell cell = new TableByName(conn, "Schools").getColumns().get(1).getCells().get(0);
+        System.out.println(cell.getFullColumn(conn));
+        System.out.println(cell.getColumn());*/
     }
 }

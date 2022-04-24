@@ -1,12 +1,12 @@
 package impl;
 
-import connectors.Connector;
 import entities.Column;
 import entities.PrimaryColumn;
 import entities.Row;
 import entities.Table;
 import logger.EntityNotUniqueException;
 
+import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -32,53 +32,10 @@ public class CreateTable implements Table {
         this.COLUMNS = new ArrayList<>(Arrays.asList(columns));
     }
 
-    public Table write(Connector connector) {
-        //check if the table has a primary column:
-        PrimaryColumn priColumn = this.getPrimaryColumn();
-
-        //this list will contain the columns being added in query form e.g. name VARCHAR(100) UNIQUE,
-        List<StringBuilder> columnTemps = new ArrayList<>();
-        if (priColumn != null) {
-            if (!priColumn.isPrimary())
-                throw new IllegalArgumentException("The column: " + priColumn.getName() + " is not Unique");
-            //get primary column:
-            StringBuilder pc = new StringBuilder(priColumn.getName() + " " + priColumn.getDatatype());
-            if (priColumn.isNotNull())
-                pc.append(" NOT NULL");
-            columnTemps.add(pc);
-        }
-        //add the remaining columns:
-        List<Column> columns = this.getColumns();
-        columns.remove(priColumn);
-        for (Column col : columns) {
-            StringBuilder nc = new StringBuilder();
-            nc.append(", ").append(col.getName()).append(" ").append(col.getDatatype());
-            if (col.isNotNull())
-                nc.append(" NOT NULL");
-            columnTemps.add(nc);
-        }
-        //add constraints:
-        columns = this.getUniqueColumns();
-        columns.remove(priColumn);
-        for (Column col : columns)
-            columnTemps.add(new StringBuilder(", UNIQUE (" + col.getName() + ")"));
-        if (priColumn != null)
-            columnTemps.add(new StringBuilder(", PRIMARY KEY (" + priColumn.getName() + ")"));
-
-        StringBuilder params = new StringBuilder();
-        for (StringBuilder sb : columnTemps)
-            params.append(sb.toString());
-        String finalParams = params.toString();
-        if (priColumn == null)
-            finalParams = finalParams.substring(2);
-
-        connector.executeUpdate("CREATE TABLE IF NOT EXISTS " + this.getName() + "(" + finalParams + ")");
-        return this;
-    }
-
+    @Nonnull
     @Override
-    public instanceType getObjectType() {
-        return instanceType.TABLE;
+    public InstanceType getEntityType() {
+        return InstanceType.TABLE;
     }
 
     @Override

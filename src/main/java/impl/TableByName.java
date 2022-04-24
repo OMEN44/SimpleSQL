@@ -4,12 +4,14 @@ import connectors.Connector;
 import connectors.Datatype;
 import connectors.dbProfiles.Database;
 import entities.*;
+import logger.MissingColumnException;
 
 import javax.annotation.Nonnull;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 @SuppressWarnings("unused")
 public class TableByName implements Table {
@@ -33,30 +35,14 @@ public class TableByName implements Table {
                     ResultSet rs = ps.executeQuery();
                     while (rs.next()) {
                         if (rs.getString("Key").equalsIgnoreCase("pri")) {
-                            if (rs.getString("Type").endsWith(")"))
-                                this.primaryColumn = new CreatePrimaryColumn(
-                                        rs.getString("Field"),
-                                        Datatype.valueOf(rs.getString("Type").split("\\(")[0]
-                                                .toUpperCase())
-                                );
-                            else
-                                this.primaryColumn = new CreatePrimaryColumn(
-                                        rs.getString("Field"),
-                                        Datatype.valueOf(rs.getString("Type"))
-                                );
-                        } else {
-                            if (rs.getString("Type").endsWith(")"))
-                                this.COLUMNS.add(new CreateColumn(
-                                        rs.getString("Field"),
-                                        Datatype.valueOf(rs.getString("Type").split("\\(")[0]
-                                                .toUpperCase())
-                                ));
-                            else
-                                this.COLUMNS.add(new CreateColumn(
-                                        rs.getString("Field"),
-                                        Datatype.valueOf(rs.getString("Type").toUpperCase())
-                                ));
-                        }
+                            Column col = new ColumnByName(connector, rs.getString("Field"), name);
+                            this.primaryColumn = new CreatePrimaryColumn(
+                                    col.getName(),
+                                    col.getDatatype(),
+                                    col.getDefaultValue(),
+                                    col.isNotNull()
+                            );
+                        } else this.COLUMNS.add(new ColumnByName(connector, rs.getString("Field"), name));
                     }
                 }
                 //get table if it is sqlite
@@ -65,37 +51,21 @@ public class TableByName implements Table {
                     ResultSet rs = ps.executeQuery();
                     while (rs.next()) {
                         if (rs.getString("pk").equalsIgnoreCase("1")) {
-                            if (rs.getString("type").endsWith(")"))
-                                this.primaryColumn = new CreatePrimaryColumn(
-                                        rs.getString("name"),
-                                        Datatype.valueOf(rs.getString("type").split("\\(")[0]
-                                                .toUpperCase())
-                                );
-                            else
-                                this.primaryColumn = new CreatePrimaryColumn(
-                                        rs.getString("name"),
-                                        Datatype.valueOf(rs.getString("type"))
-                                );
-                        } else {
-                            if (rs.getString("type").endsWith(")"))
-                                this.COLUMNS.add(new CreateColumn(
-                                        rs.getString("name"),
-                                        Datatype.valueOf(rs.getString("type").split("\\(")[0]
-                                                .toUpperCase())
-
-                                ));
-                            else
-                                this.COLUMNS.add(new CreateColumn(
-                                        rs.getString("name"),
-                                        Datatype.valueOf(rs.getString("type"))
-                                ));
-                        }
+                            Column col = new ColumnByName(connector, rs.getString("name"), name);
+                            this.primaryColumn = new CreatePrimaryColumn(
+                                    col.getName(),
+                                    col.getDatatype(),
+                                    col.getDefaultValue(),
+                                    col.isNotNull()
+                            );
+                        } else this.COLUMNS.add(new ColumnByName(connector, rs.getString("name"), name));
                     }
                 }
             }
         } catch (SQLSyntaxErrorException e) {
-            System.err.println("No such table with name: " + connector.getDatabase().getName() + "." + name);
-        } catch (SQLException e) {
+            if (connector.isDebugMode())
+                System.err.println("No such table with name: " + connector.getDatabase().getName() + "." + name);
+        } catch (SQLException | MissingColumnException e) {
             e.printStackTrace();
         } finally {
             Connector.disconnector(conn, ps);
@@ -131,9 +101,7 @@ public class TableByName implements Table {
 
     @Override
     public List<Column> getColumns() {
-        List<Column> columns = new ArrayList<>(this.COLUMNS);
-        columns.add(this.primaryColumn);
-        return columns;
+        return new ArrayList<>(this.COLUMNS);
     }
 
     @Override

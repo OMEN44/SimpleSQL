@@ -1,18 +1,18 @@
 package impl;
 
 import connectors.Connector;
-import entities.Cell;
-import entities.Column;
-import entities.HasTable;
-import entities.Table;
+import connectors.Datatype;
+import connectors.dbProfiles.Database;
+import entities.*;
 import logger.MissingColumnException;
 import logger.TableUnassignedException;
 
+import javax.annotation.Nonnull;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
 
 @SuppressWarnings("unused")
@@ -23,12 +23,11 @@ public class ColumnByName implements Column {
     private final boolean NOT_NULL;
     private final boolean IS_UNIQUE;
     private final boolean PRIMARY_KEY;
-    private List<Cell> cells;
+    private final List<Cell> cells;
     private Table parentTable;
 
-    public ColumnByName(Connector connector, String name, Table table) throws MissingColumnException {
-        this.NAME = name;
-        this.parentTable = table;
+    public ColumnByName(Connector connector, String columnName, String tableName) throws MissingColumnException {
+        this.NAME = columnName;
 
         Connection conn = null;
         PreparedStatement ps = null;
@@ -36,8 +35,8 @@ public class ColumnByName implements Column {
 
         try {
             conn = connector.getSQLConnection();
-            if (connector.connectorType() == Connector.ConnectionType.MYSQL) {
-                ps = conn.prepareStatement("DESCRIBE " + table.getName());
+            if (connector.databaseType() == Database.DatabaseType.MYSQL) {
+                ps = conn.prepareStatement("DESCRIBE " + tableName);
                 ResultSet rs = ps.executeQuery();
                 while (rs.next()) {
                     if (rs.getString("Field").equals(this.NAME)) {
@@ -54,7 +53,7 @@ public class ColumnByName implements Column {
                         else
                             pc = new CreateColumn(
                                     rs.getString("Field"),
-                                    Datatype.valueOf(rs.getString("Type")),
+                                    Datatype.valueOf(rs.getString("Type").toUpperCase()),
                                     rs.getObject("Default"),
                                     rs.getString("Null").equals("YES"),
                                     rs.getString("Key").equals("UNI"),
@@ -65,7 +64,7 @@ public class ColumnByName implements Column {
             }
             //get table if it is sqlite
             else {
-                ps = conn.prepareStatement("PRAGMA table_info(" + table.getName() + ");");
+                ps = conn.prepareStatement("PRAGMA table_info(" + tableName + ");");
                 ResultSet rs = ps.executeQuery();
                 while (rs.next()) {
                     if (rs.getString("name").equals(this.NAME)) {
@@ -91,9 +90,16 @@ public class ColumnByName implements Column {
                     }
                 }
             }
-            pc.setParentTable(table);
+            //get cells for column:
+            Table results = connector.executeQuery("SELECT `" + columnName + "` FROM " + tableName);
+            List<Cell> cells = new ArrayList<>();
+            for (Row row : results.getRows())
+                cells.add(row.getCells().get(0));
+            assert pc != null;
+            pc.setCells(cells.toArray(new Cell[0]));
         } catch (NullPointerException e) {
-            throw new MissingColumnException("Column " + name + " was not found in table " + table.getName());
+            e.printStackTrace();
+            throw new MissingColumnException("Column " + columnName + " was not found in table " + tableName);
         } catch (SQLException e) {
             e.printStackTrace();
         } finally {
@@ -109,30 +115,28 @@ public class ColumnByName implements Column {
         else
             this.IS_UNIQUE = pc.isUnique();
         this.PRIMARY_KEY = pc.isUnique();
+        this.cells = pc.getCells();
     }
 
+    @Nonnull
     @Override
-    public instanceType getObjectType() {
-        return instanceType.COLUMN;
+    public InstanceType getEntityType() {
+        return InstanceType.COLUMN;
     }
 
     @Override
     public Table getParentTable() throws TableUnassignedException {
         if (parentTable == null) {
-            throw new TableUnassignedException("Parent table has not been set for this object.", this.getObjectType());
+            throw new TableUnassignedException("Parent table has not been set for this object.", this.getEntityType());
         }
         return parentTable;
     }
 
+    @Nonnull
     @Override
-    public HasTable setParentTable(Table table) {
+    public Entity setParentTable(Table table) {
         this.parentTable = table;
         return this;
-    }
-
-    @Override
-    public void write(Connector conn) throws TableUnassignedException {
-
     }
 
     @Override
@@ -140,17 +144,20 @@ public class ColumnByName implements Column {
         return this.cells;
     }
 
+    @Nonnull
     @Override
     public Column setCells(Cell... cells) {
         System.err.println("The cells of this column cannot be changed!");
         return this;
     }
 
+    @Nonnull
     @Override
     public String getName() {
         return this.NAME;
     }
 
+    @Nonnull
     @Override
     public Datatype getDatatype() {
         return this.DATATYPE;

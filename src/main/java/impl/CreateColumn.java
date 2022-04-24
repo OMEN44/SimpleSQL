@@ -1,10 +1,12 @@
 package impl;
 
 import connectors.Connector;
+import connectors.Datatype;
 import entities.*;
 import logger.Boxer;
 import logger.TableUnassignedException;
 
+import javax.annotation.Nonnull;
 import java.util.Arrays;
 import java.util.List;
 
@@ -60,21 +62,23 @@ public class CreateColumn implements Column {
         connector.executeUpdate(query);
     }
 
+    @Nonnull
     @Override
-    public instanceType getObjectType() {
-        return instanceType.COLUMN;
+    public InstanceType getEntityType() {
+        return InstanceType.COLUMN;
     }
 
     @Override
     public Table getParentTable() throws TableUnassignedException {
         if (parentTable == null) {
-            throw new TableUnassignedException("Parent table has not been set for this object.", this.getObjectType());
+            throw new TableUnassignedException("Parent table has not been set for this object.", this.getEntityType());
         }
         return parentTable;
     }
 
+    @Nonnull
     @Override
-    public HasTable setParentTable(Table table) {
+    public Entity setParentTable(Table table) {
         this.parentTable = table;
         return this;
     }
@@ -84,17 +88,20 @@ public class CreateColumn implements Column {
         return this.cells;
     }
 
+    @Nonnull
     @Override
     public Column setCells(Cell... cells) {
         this.cells = Arrays.stream(cells).toList();
         return this;
     }
 
+    @Nonnull
     @Override
     public String getName() {
         return this.NAME;
     }
 
+    @Nonnull
     @Override
     public Datatype getDatatype() {
         return this.DATATYPE;

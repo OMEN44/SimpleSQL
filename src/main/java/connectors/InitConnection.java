@@ -5,6 +5,7 @@ import connectors.dbProfiles.MySQL;
 import connectors.dbProfiles.SQLite;
 import entities.*;
 import impl.*;
+import logger.EntityNotUniqueException;
 import logger.Logger;
 import logger.TableUnassignedException;
 
@@ -13,6 +14,7 @@ import java.io.IOException;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @SuppressWarnings("unused")
 public class InitConnection implements Connector {
@@ -21,6 +23,7 @@ public class InitConnection implements Connector {
     private final Database DATABASE;
     private final Database.DatabaseType connType;
     private Status status;
+    private boolean debugMode = false;
 
     public InitConnection(Database database) {
         switch (database.getDatabaseType()) {
@@ -53,6 +56,16 @@ public class InitConnection implements Connector {
     }
 
     @Override
+    public void debugMode(boolean b) {
+        this.debugMode = b;
+    }
+
+    @Override
+    public boolean isDebugMode() {
+        return this.debugMode;
+    }
+
+    @Override
     public Connection getSQLConnection() {
         switch (this.connType) {
             case MYSQL -> {
@@ -66,7 +79,6 @@ public class InitConnection implements Connector {
                             mySQL.getPassword()
                     );
                 } catch (SQLException e) {
-                    System.out.println(2);
                     Logger.printSQLException(e);
                 }
                 this.status = Status.CONNECTED;
@@ -101,6 +113,7 @@ public class InitConnection implements Connector {
                     return connection;
                 } catch (SQLException ex) {
                     System.err.println("SQLite exception on initialize");
+                    ex.printStackTrace();
                 } catch (ClassNotFoundException ex) {
                     System.err.println("You need the SQLite JDBC library. Google it. Put it in /lib folder.");
                 }
@@ -111,13 +124,13 @@ public class InitConnection implements Connector {
     }
 
     @Override
-    public void executeUpdate(String sqlStatement, Object... parameters) {
+    public void executeUpdate(String sql, Object... parameters) {
         Connection conn = null;
         PreparedStatement ps = null;
         try {
             conn = getSQLConnection();
             if (conn != null) {
-                ps = conn.prepareStatement(sqlStatement);
+                ps = conn.prepareStatement(sql);
                 int index = 1;
                 for (Object param : parameters) {
                     ps.setObject(index, param);
@@ -133,7 +146,7 @@ public class InitConnection implements Connector {
     }
 
     @Override
-    public Table executeQuery(String sqlStatement, Object... parameters) {
+    public Table executeQuery(String sql, Object... parameters) {
         Connection conn = null;
         PreparedStatement ps = null;
         List<Column> columns = new ArrayList<>();
@@ -141,7 +154,7 @@ public class InitConnection implements Connector {
         try {
             conn = getSQLConnection();
             if (conn != null) {
-                ps = conn.prepareStatement(sqlStatement);
+                ps = conn.prepareStatement(sql);
                 int index = 1;
                 for (Object param : parameters) {
                     ps.setObject(index, param);
@@ -154,11 +167,9 @@ public class InitConnection implements Connector {
                             rs.getMetaData().getColumnName(i),
                             Datatype.OBJECT
                     ));
-                int i = 1;
                 while (rs.next()) {
-                    //System.out.println(i);
                     List<Cell> cells = new ArrayList<>();
-                    for (Column col : columns)
+                    for (Column col : columns) {
                         cells.add(new CreateCell(
                                 Datatype.OBJECT,
                                 rs.getObject(col.getName()),
@@ -166,10 +177,10 @@ public class InitConnection implements Connector {
                                 false,
                                 false
                         ));
+                    }
                     rows.add(new CreateRow(
                             cells.toArray(new Cell[0])
                     ));
-                    i++;
                 }
             }
         } catch (SQLException e) {
@@ -185,50 +196,135 @@ public class InitConnection implements Connector {
     }
 
     @Override
-    public void writeToDatabase(Entity entity) throws TableUnassignedException {
-        switch (entity.getObjectType()) {
-            case TABLE -> {
-                Table table = (Table) entity;
-                //check if the table has a primary column:
-                PrimaryColumn priColumn = table.getPrimaryColumn();
+    public void writeToDatabase(Entity... entities) throws TableUnassignedException, EntityNotUniqueException {
+        for (Entity entity : entities) {
+            System.out.println(entity.getEntityType());
+            switch (entity.getEntityType()) {
+                case TABLE -> {
+                    Table table = (Table) entity;
+                    //check if the table has a primary column:
+                    PrimaryColumn priColumn = table.getPrimaryColumn();
 
-                //this list will contain the columns being added in query form e.g. name VARCHAR(100) UNIQUE,
-                List<StringBuilder> columnTemps = new ArrayList<>();
-                if (priColumn != null) {
-                    if (!priColumn.isPrimary())
-                        throw new IllegalArgumentException("The column: " + priColumn.getName() + " is not Unique");
-                    //get primary column:
-                    StringBuilder pc = new StringBuilder(priColumn.getName() + " " + priColumn.getDatatype());
-                    if (priColumn.isNotNull())
-                        pc.append(" NOT NULL");
-                    columnTemps.add(pc);
+                    //this list will contain the columns being added in query form e.g. name VARCHAR(100) UNIQUE,
+                    List<StringBuilder> columnTemps = new ArrayList<>();
+                    if (priColumn != null) {
+                        if (!priColumn.isPrimary())
+                            throw new IllegalArgumentException("The column: " + priColumn.getName() + " is not Unique");
+                        //get primary column:
+                        StringBuilder pc = new StringBuilder(priColumn.getName() + " " + Datatype.toString(priColumn.getDatatype()));
+                        if (priColumn.isNotNull())
+                            pc.append(" NOT NULL");
+                        columnTemps.add(pc);
+                    }
+                    //add the remaining columns:
+                    List<Column> columns = table.getColumns();
+                    columns.remove(priColumn);
+                    for (Column col : columns) {
+                        StringBuilder nc = new StringBuilder();
+                        nc.append(", ").append(col.getName()).append(" ").append(Datatype.toString(col.getDatatype()));
+                        if (col.isNotNull())
+                            nc.append(" NOT NULL");
+                        columnTemps.add(nc);
+                    }
+                    //add constraints:
+                    columns = table.getUniqueColumns();
+                    columns.remove(priColumn);
+                    for (Column col : columns)
+                        columnTemps.add(new StringBuilder(", UNIQUE (" + col.getName() + ")"));
+                    if (priColumn != null)
+                        columnTemps.add(new StringBuilder(", PRIMARY KEY (" + priColumn.getName() + ")"));
+
+                    StringBuilder params = new StringBuilder();
+                    for (StringBuilder sb : columnTemps)
+                        params.append(sb.toString());
+                    String finalParams = params.toString();
+                    if (priColumn == null)
+                        finalParams = finalParams.substring(2);
+
+                    executeUpdate("CREATE TABLE IF NOT EXISTS " + table.getName() + "(" + finalParams + ")");
                 }
-                //add the remaining columns:
-                List<Column> columns = table.getColumns();
-                columns.remove(priColumn);
-                for (Column col : columns) {
-                    StringBuilder nc = new StringBuilder();
-                    nc.append(", ").append(col.getName()).append(" ").append(col.getDatatype());
-                    if (col.isNotNull())
-                        nc.append(" NOT NULL");
-                    columnTemps.add(nc);
+                case COLUMN -> {
+                    Column column = (Column) entity;
+                    if (column.getParentTable() == null)
+                        throw new TableUnassignedException("Must assign a table to a column to write it.");
+                    String table = column.getParentTable().getName();
+                    boolean duplicate = false;
+                    for (Column col : new TableByName(this, table).getColumns()) {
+                        if (col == null) break;
+                        if (Objects.equals(col.getName(), column.getName())) {
+                            if (this.debugMode)
+                                System.err.println(
+                                        "Column duplicate detected. Skipped writing column: " + table + "."
+                                                + column.getName()
+                                );
+                            duplicate = true;
+                            break;
+                        }
+                    }
+                    if (!duplicate) {
+                        executeUpdate(
+                                "ALTER TABLE " + table + " ADD " + column.getName() + " " +
+                                        Datatype.toString(column.getDatatype())
+                        );
+                        if (column.isUnique())
+                            executeUpdate("ALTER TABLE " + table + " ADD UNIQUE (" + column.getName() + ")");
+                        if (column.isNotNull())
+                            executeUpdate("ALTER TABLE " + table + " MODIFY " + column.getName() + " NOT NULL");
+                        if (column.getDefaultValue() != null) {
+                            executeUpdate("ALTER TABLE " + table + " ALTER " + column.getName() +
+                                    " SET DEFAULT " + column.getDefaultValue());
+                        }
+                    }
                 }
-                //add constraints:
-                columns = table.getUniqueColumns();
-                columns.remove(priColumn);
-                for (Column col : columns)
-                    columnTemps.add(new StringBuilder(", UNIQUE (" + col.getName() + ")"));
-                if (priColumn != null)
-                    columnTemps.add(new StringBuilder(", PRIMARY KEY (" + priColumn.getName() + ")"));
-
-                StringBuilder params = new StringBuilder();
-                for (StringBuilder sb : columnTemps)
-                    params.append(sb.toString());
-                String finalParams = params.toString();
-                if (priColumn == null)
-                    finalParams = finalParams.substring(2);
-
-                executeUpdate("CREATE TABLE IF NOT EXISTS " + table.getName() + "(" + finalParams + ")");
+                case ROW -> {
+                    Row row = (Row) entity;
+                    if (row.getParentTable() == null)
+                        throw new TableUnassignedException("Must assign a table to a row to write it.");
+                    Table table = new TableByName(this, row.getParentTable().getName());
+                    //check for duplicates
+                    boolean duplicate = false;
+                    for (Column col : table.getUniqueColumns()) {
+                        for (Cell c1 : Objects.requireNonNull(col.getCells())) {
+                            for (Cell c2 : row.getCells()) {
+                                if (Objects.equals(c1.getData(), c2.getData())) {
+                                    if (this.debugMode)
+                                        System.err.println(
+                                                "Row duplicate detected. Skipped writing row with unique cell value: '" +
+                                                        c2.getData() + "' in column: " + c2.getColumn().getName()
+                                        );
+                                    duplicate = true;
+                                }
+                            }
+                        }
+                    }
+                    if (!duplicate) {
+                        StringBuilder columns = new StringBuilder();
+                        StringBuilder unknowns = new StringBuilder();
+                        List<Object> values = new ArrayList<>();
+                        for (Cell cell : row.getCells()) {
+                            columns.append(cell.getColumn().getName()).append(", ");
+                            unknowns.append("?, ");
+                            values.add(cell.getData());
+                        }
+                        executeUpdate("INSERT INTO " + table.getName() + " (" +
+                                columns.substring(0, columns.length() - 2) + ") VALUES (" +
+                                unknowns.substring(0, unknowns.length() - 2) + ")", values.toArray(new Object[0]));
+                    }
+                }
+                case CELL -> {
+                    Cell cell = (Cell) entity;
+                    if (cell.getParentTable() == null)
+                        throw new TableUnassignedException("Must assign a table to a row to write it.");
+                    if (cell.getRowIdentifier() == null)
+                        throw new EntityNotUniqueException("This cell needs a row identifier cell assigned to it.");
+                    String table = cell.getParentTable().getName();
+                    Cell rowId = cell.getRowIdentifier();
+                    executeUpdate(
+                            "UPDATE " + table + " SET " + cell.getColumn().getName() + "=? WHERE " +
+                                    rowId.getColumn().getName() + "=?",
+                            cell.getData(), rowId.getData()
+                    );
+                }
             }
         }
     }
