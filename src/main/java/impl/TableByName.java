@@ -1,8 +1,11 @@
 package impl;
 
 import connectors.Connector;
+import connectors.Datatype;
+import connectors.dbProfiles.Database;
 import entities.*;
 
+import javax.annotation.Nonnull;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -25,7 +28,7 @@ public class TableByName implements Table {
             conn = connector.getSQLConnection();
             if (conn != null) {
                 //get table if it is mysql
-                if (connector.connectorType() == Connector.ConnectionType.MYSQL) {
+                if (connector.databaseType() == Database.DatabaseType.MYSQL) {
                     ps = conn.prepareStatement("DESCRIBE " + name);
                     ResultSet rs = ps.executeQuery();
                     while (rs.next()) {
@@ -51,7 +54,7 @@ public class TableByName implements Table {
                             else
                                 this.COLUMNS.add(new CreateColumn(
                                         rs.getString("Field"),
-                                        Datatype.valueOf(rs.getString("Type"))
+                                        Datatype.valueOf(rs.getString("Type").toUpperCase())
                                 ));
                         }
                     }
@@ -99,9 +102,10 @@ public class TableByName implements Table {
         }
     }
 
+    @Nonnull
     @Override
-    public instanceType getObjectType() {
-        return Entity.instanceType.TABLE;
+    public InstanceType getEntityType() {
+        return InstanceType.TABLE;
     }
 
     @Override
@@ -135,7 +139,7 @@ public class TableByName implements Table {
     @Override
     public List<Row> getRows() {
         System.err.println("unfinished");
-        return new ArrayList<>();
+        return rows;
     }
 
     @Override
