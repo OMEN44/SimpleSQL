@@ -1,6 +1,9 @@
 package entities;
 
-import impl.Datatype;
+import connectors.Datatype;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * BasicCell is the base for most of this library. <br>
@@ -13,10 +16,12 @@ public interface BasicCell extends HasTable {
     /**
      * @return Returns the data contained by this cell as an object.
      */
+    @Nullable
     Object getData();
 
     /**
      * @return Returns the datatype of the cell.
      */
+    @Nonnull
     Datatype getDatatype();
 }

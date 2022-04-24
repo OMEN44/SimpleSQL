@@ -1,7 +1,8 @@
 package entities;
 
-import connectors.Connector;
 import logger.SimpleSQLException;
+
+import javax.annotation.Nonnull;
 
 /**
  * @apiNote Core for all the objects in this library. {@code Entity} provides basic structure for all the database
@@ -13,7 +14,7 @@ public interface Entity {
     /**
      * This enum is a list of identifiers for the different entities.
      */
-    enum instanceType {
+    enum InstanceType {
         TABLE,
         COLUMN,
         ROW,
@@ -23,17 +24,18 @@ public interface Entity {
     /**
      * @return This method is implemented int each entity and returns the hard coded entity type.
      */
-    instanceType getObjectType();
+    @Nonnull
+    InstanceType getEntityType();
 
     /**
      * @param entity Entity being checked.
      * @return The entity type of the object being checked.
      * @throws SimpleSQLException This is thrown if the entity being checked is not from the vanilla library. <br>
-     * {@link Entity#getObjectType()} should be implemented into your class instead.
+     * {@link Entity#getEntityType()} should be implemented into your class instead.
      */
-    static instanceType getInstanceType(Entity entity) throws SimpleSQLException {
+    static InstanceType getInstanceType(Entity entity) throws SimpleSQLException {
         if (entity instanceof BasicCell) {
-            return instanceType.CELL;
+            return InstanceType.CELL;
         } else {
             throw new SimpleSQLException("Entity input is not recognised.");
         }

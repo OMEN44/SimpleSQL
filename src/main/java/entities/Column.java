@@ -1,7 +1,9 @@
 package entities;
 
-import impl.Datatype;
+import connectors.Datatype;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.List;
 
 /**
@@ -13,16 +15,19 @@ public interface Column extends HasTable {
     /**
      * @return Gets a list of all the cells in a column. Returns null if there are no rows.
      */
+    @Nullable
     List<Cell> getCells();
 
     /**
      * @return Gets the name of the column.
      */
+    @Nonnull
     String getName();
 
     /**
      * @return Gets the {@link Datatype} of the row.
      */
+    @Nonnull
     Datatype getDatatype();
 
     /**
@@ -33,6 +38,7 @@ public interface Column extends HasTable {
     /**
      * @return Gets the default value of the column. If the column is null this will always be null.
      */
+    @Nullable
     Object getDefaultValue();
 
     /**
@@ -46,5 +52,10 @@ public interface Column extends HasTable {
      */
     boolean isPrimary();
 
+    /**
+     * @param cells Cells to be added to the column
+     * @return The column with its new cells
+     */
+    @Nonnull
     Column setCells(Cell... cells);
 }
