@@ -1,10 +1,12 @@
 package logger;
 
+import jdk.jfr.Experimental;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-
+@Experimental
 @SuppressWarnings("unused")
 public class Boxer {
 

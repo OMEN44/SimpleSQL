@@ -1,4 +1,4 @@
-package impl;
+package connectors;
 
 import entities.Column;
 

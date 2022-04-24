@@ -1,4 +1,4 @@
-package impl;
+package connectors;
 
 /**
  * @apiNote This is only for common data types more complex data types should be written in string form.
@@ -30,7 +30,7 @@ public enum Datatype {
 
     public Integer getSize() {return this.size;}
 
-    public static String dataTypeAsString(Datatype datatype) {
+    public static String toString(Datatype datatype) {
         return switch (datatype) {
             case VARCHAR -> "VARCHAR(" + datatype.getSize() + ")";
             case CHAR -> "CHAR(" + datatype.getSize() + ")";

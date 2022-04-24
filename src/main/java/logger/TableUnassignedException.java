@@ -10,10 +10,10 @@ public class TableUnassignedException extends SimpleSQLException {
     }
 
     public TableUnassignedException(String message, HasTable hasTable) {
-        super(message, hasTable.getObjectType());
+        super(message, hasTable.getEntityType());
     }
 
-    public TableUnassignedException(String message, Entity.instanceType instanceType) {
+    public TableUnassignedException(String message, Entity.InstanceType instanceType) {
         super(message, instanceType);
     }
 

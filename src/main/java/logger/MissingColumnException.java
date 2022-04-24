@@ -10,10 +10,10 @@ public class MissingColumnException extends SimpleSQLException {
     }
 
     public MissingColumnException(String message, HasTable hasTable) {
-        super(message, hasTable.getObjectType());
+        super(message, hasTable.getEntityType());
     }
 
-    public MissingColumnException(String message, Entity.instanceType instanceType) {
+    public MissingColumnException(String message, Entity.InstanceType instanceType) {
         super(message, instanceType);
     }
 

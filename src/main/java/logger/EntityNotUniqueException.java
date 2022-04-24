@@ -10,10 +10,10 @@ public class EntityNotUniqueException extends SimpleSQLException {
     }
 
     public EntityNotUniqueException(String message, HasTable hasTable) {
-        super(message, hasTable.getObjectType());
+        super(message, hasTable.getEntityType());
     }
 
-    public EntityNotUniqueException(String message, Entity.instanceType instanceType) {
+    public EntityNotUniqueException(String message, Entity.InstanceType instanceType) {
         super(message, instanceType);
     }
 
