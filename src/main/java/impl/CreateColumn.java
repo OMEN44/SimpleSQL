@@ -7,7 +7,6 @@ import logger.TableUnassignedException;
 import javax.annotation.Nonnull;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
 
 @SuppressWarnings("unused")
 public class CreateColumn implements Column {
@@ -72,6 +71,13 @@ public class CreateColumn implements Column {
     @Override
     public Column setCells(Cell... cells) {
         this.cells = Arrays.stream(cells).toList();
+        return this;
+    }
+
+    @Nonnull
+    @Override
+    public Column addCell(Cell... cells) {
+        this.cells.addAll(Arrays.asList(cells));
         return this;
     }
 

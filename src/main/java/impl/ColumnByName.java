@@ -13,6 +13,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @SuppressWarnings("unused")
@@ -148,6 +149,13 @@ public class ColumnByName implements Column {
     @Override
     public Column setCells(Cell... cells) {
         System.err.println("The cells of this column cannot be changed!");
+        return this;
+    }
+
+    @Nonnull
+    @Override
+    public Column addCell(Cell... cells) {
+        this.cells.addAll(Arrays.asList(cells));
         return this;
     }
 

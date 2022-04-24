@@ -58,4 +58,11 @@ public interface Column extends HasTable {
      */
     @Nonnull
     Column setCells(Cell... cells);
+
+    /**
+     * @param cells Cells to be added to the column
+     * @return The column with its new cells
+     */
+    @Nonnull
+    Column addCell(Cell... cells);
 }
