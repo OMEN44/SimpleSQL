@@ -9,7 +9,7 @@ import impl.TableByName;
 import java.util.ArrayList;
 import java.util.List;
 
-@SuppressWarnings("unused")
+@Deprecated(forRemoval = true)
 public class TableWriter {
     private Table table;
 

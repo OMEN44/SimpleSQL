@@ -54,6 +54,6 @@ public class SQLite implements Database {
 
     @Override
     public String getURL() {
-        return "jdbc:sqlite:" + this.DATA_FOLDER;
+        return "jdbc:sqlite:" + this.DATA_FOLDER + "\\" + this.getName() + ".db";
     }
 }

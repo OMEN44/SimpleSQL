@@ -12,7 +12,7 @@ public class SimpleSQLException extends Exception {
         super(message);
     }
 
-    public SimpleSQLException(String message, Entity.instanceType instanceType) {
+    public SimpleSQLException(String message, Entity.InstanceType instanceType) {
         super(message + " Object missing table is type: " + instanceType.toString());
     }
 
