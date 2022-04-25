@@ -6,9 +6,9 @@ SQL library for using MySQL and SQLite. Uses objects to improve usability instea
 <h3>How to create a connection:<h3/>
 
 ```java
-import connectors.Connector;
-import connectors.InitConnection;
-import connectors.dbProfiles.MySQL;
+import simpleSQL.connectors.Connector;
+import simpleSQL.connectors.InitConnection;
+import simpleSQL.connectors.dbProfiles.MySQL;
 
 public class Main {
     public static void main(String[] args) {
