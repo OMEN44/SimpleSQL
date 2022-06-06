@@ -3,6 +3,7 @@ package simpleSQL.connectors.dbProfiles;
 import simpleSQL.entities.Table;
 
 import java.io.File;
+import java.util.Arrays;
 import java.util.List;
 
 @SuppressWarnings("unused")
@@ -28,6 +29,12 @@ public class SQLite implements Database {
     public SQLite(String name, String dataFolderPath) {
         this.NAME = name;
         this.DATA_FOLDER = new File(dataFolderPath);
+    }
+
+    public SQLite(SQLite sqLite, Table... tables) {
+        this.NAME = sqLite.getName();
+        this.DATA_FOLDER = sqLite.getDataFolder();
+        this.tables = Arrays.asList(tables);
     }
 
     /**

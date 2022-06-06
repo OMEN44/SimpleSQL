@@ -116,6 +116,16 @@ public class CreateColumn implements Column {
 
     @Override
     public String toString() {
-        return this.getName();
+        StringBuilder sb = new StringBuilder();
+        sb.append(this.NAME)
+                .append("\n");
+        sb.append("=".repeat(this.getName().length()))
+                .append("\n");
+        for (int i = 0; i < getCells().size() - 1; i++) {
+            sb.append(getCells().get(i).getData())
+                    .append("\n");
+        }
+        sb.append("=".repeat(this.getName().length()));
+        return sb.toString();
     }
 }

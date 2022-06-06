@@ -2,6 +2,7 @@ package simpleSQL.connectors.dbProfiles;
 
 import simpleSQL.entities.Table;
 
+import java.util.Arrays;
 import java.util.List;
 
 @SuppressWarnings("unused")
@@ -30,6 +31,14 @@ public class MySQL implements Database {
         this.PORT = port;
     }
 
+    public MySQL(MySQL mySQL, Table... tables) {
+        this.PASSWORD = mySQL.getPassword();
+        this.NAME = mySQL.getName();
+        this.HOST = mySQL.getHost();
+        this.USER = mySQL.getUser();
+        this.PORT = mySQL.getPort();
+        this.tables = Arrays.asList(tables);
+    }
 
     /**
      * @return Returns the password being used for the database connection.

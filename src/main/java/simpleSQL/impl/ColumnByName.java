@@ -5,6 +5,7 @@ import simpleSQL.connectors.Datatype;
 import simpleSQL.connectors.dbProfiles.Database;
 import simpleSQL.entities.*;
 import simpleSQL.logger.MissingColumnException;
+import simpleSQL.logger.SimpleSQLException;
 import simpleSQL.logger.TableUnassignedException;
 
 import javax.annotation.Nonnull;
@@ -81,7 +82,7 @@ public class ColumnByName implements Column {
                         else
                             pc = new CreateColumn(
                                     rs.getString("name"),
-                                    Datatype.valueOf(rs.getString("type")),
+                                    Datatype.valueOf(rs.getString("type").toUpperCase()),
                                     rs.getObject("dflt_value"),
                                     rs.getString("notnull").equals("1"),
                                     rs.getString("pk").equals("1"),
@@ -97,7 +98,7 @@ public class ColumnByName implements Column {
         } catch (NullPointerException e) {
             e.printStackTrace();
             throw new MissingColumnException("Column " + columnName + " was not found in table " + tableName);
-        } catch (SQLException e) {
+        } catch (SQLException | SimpleSQLException e) {
             e.printStackTrace();
         } finally {
             Connector.disconnector(conn, ps);
@@ -185,5 +186,20 @@ public class ColumnByName implements Column {
     @Override
     public boolean isPrimary() {
         return this.PRIMARY_KEY;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append(this.NAME)
+                .append("\n");
+        sb.append("=".repeat(this.getName().length()))
+                .append("\n");
+        for (int i = 0; i < getCells().size() - 1; i++) {
+            sb.append(getCells().get(i).getData())
+                    .append("\n");
+        }
+        sb.append("=".repeat(this.getName().length()));
+        return sb.toString();
     }
 }

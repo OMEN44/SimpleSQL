@@ -22,7 +22,7 @@ public interface Cell extends BasicCell {
      * @return Gets the other cells in the same row.
      */
     @Nonnull
-    Row getRow();
+    Row getRow(Connector connector) throws TableUnassignedException, EntityNotUniqueException;
 
     @Nonnull
     Cell setRowIdentifier(Cell uniqueCell) throws EntityNotUniqueException;

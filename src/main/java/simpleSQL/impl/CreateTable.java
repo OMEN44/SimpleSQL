@@ -1,15 +1,13 @@
 package simpleSQL.impl;
 
-import simpleSQL.entities.Column;
-import simpleSQL.entities.PrimaryColumn;
-import simpleSQL.entities.Row;
-import simpleSQL.entities.Table;
+import simpleSQL.entities.*;
 import simpleSQL.logger.EntityNotUniqueException;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 @SuppressWarnings("unused")
 public class CreateTable implements Table {
@@ -69,9 +67,16 @@ public class CreateTable implements Table {
 
     @Override
     public List<Row> getRows() {
-        if (this.rows != null) return rows;
-        else System.err.println("This table object was created and does not contain rows. Use TableByName#getRows");
-        return null;
+        this.rows = new ArrayList<>();
+        int size = Objects.requireNonNull(getColumns().get(0).getCells()).size();
+        for (int i = 0; i < size; i++) {
+            List<Cell> cells = new ArrayList<>();
+            for (Column col : getColumns()) {
+                cells.add(col.getCells().get(i));
+            }
+            this.rows.add(new CreateRow(cells.toArray(new Cell[0])));
+        }
+        return rows;
     }
 
     @Override

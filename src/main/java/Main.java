@@ -1,23 +1,25 @@
 import simpleSQL.connectors.Connector;
 import simpleSQL.connectors.InitConnection;
+import simpleSQL.connectors.dbProfiles.Database;
 import simpleSQL.connectors.dbProfiles.MySQL;
 import simpleSQL.connectors.dbProfiles.SQLite;
-import simpleSQL.entities.*;
-import simpleSQL.impl.*;
-import simpleSQL.connectors.Datatype;
-import simpleSQL.logger.EntityNotUniqueException;
-import simpleSQL.logger.MissingColumnException;
-import simpleSQL.logger.TableUnassignedException;
+import simpleSQL.entities.Row;
+import simpleSQL.entities.Table;
+
+import java.util.List;
+import java.util.Objects;
 
 public class Main {
 
-    public static void main(String[] args) throws EntityNotUniqueException, TableUnassignedException, MissingColumnException {
+    public static void main(String[] args) {
 
+        @SuppressWarnings("unused")
         SQLite sqLite = new SQLite(
                 "testing",
-                "C:\\Users\\huons\\Documents\\JavaPrograms\\SimpleSQL\\database"
+                "C:\\Users\\huons\\Documents\\programming\\JavaPrograms\\SimpleSQL\\database"
         );
 
+        @SuppressWarnings("unused")
         MySQL indroCraft = new MySQL(
                 3306,
                 "Indrocraft",
@@ -26,9 +28,10 @@ public class Main {
                 "Minecraft$44"
         );
 
+        @SuppressWarnings("unused")
         MySQL mySQL = new MySQL(
                 3306,
-                "test",
+                "pmdb",
                 "localhost",
                 "root",
                 ""
@@ -37,38 +40,23 @@ public class Main {
         Connector conn = new InitConnection(sqLite);
         conn.debugMode(true);
 
-        /*Table testGetter = conn.executeQuery("SELECT * FROM Schools");
-        for (Column col : testGetter.getColumns()) {
-            System.out.print(col.getName() + " (");
-            System.out.print(col.isPrimary() + "):");
-            System.out.println();
-            for (Cell cel : Objects.requireNonNull(col.getCells())) {
-                System.out.println(cel);
-            }
+        Database inUse = conn.getDatabase();
+        List<Table> tables = inUse.getTables();
+
+        //get tableByName ignores primary keys
+
+        /*Table table = conn.executeQuery("SELECT * FROM pm_marriage");
+        for (Row col : table.getRows()) {
+            System.out.println(col);
         }*/
 
-        Column schoolName = new CreatePrimaryColumn("schoolName", Datatype.VARCHAR);
-        Column location = new CreateColumn("location", Datatype.VARCHAR, "", false, true, false);
-
-        Table table = new CreateTable(
-                "Schools",
-                schoolName,
-                location
-        );
-
-        Column column = (Column) new CreateColumn("Students", Datatype.INT).setParentTable(table);
-
-        Row row = (Row) new CreateRow(
-                new CreateCell(Datatype.VARCHAR, "Hell", location),
-                new CreateCell(Datatype.INT, "666", column)
-        ).setParentTable(table);
-
-        Cell cell = (Cell) new CreateCell(Datatype.VARCHAR, "Bad School", schoolName).setParentTable(table);
-
-        conn.writeToDatabase(table, column/*, row, cell.setRowIdentifier(new CreateCell(Datatype.VARCHAR, "Hell", location))*/);
-
-        /*Cell cell = new TableByName(conn, "Schools").getColumns().get(1).getCells().get(0);
-        System.out.println(cell.getFullColumn(conn));
-        System.out.println(cell.getColumn());*/
+        for (Table tab : tables) {
+            if (Objects.equals(tab.getName(), "pm_marriage")) {
+                System.out.println("TableByName");
+                for (Row col : tab.getRows()) {
+                    System.out.println(col);
+                }
+            }
+        }
     }
 }

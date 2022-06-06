@@ -7,6 +7,7 @@ import simpleSQL.entities.*;
 import simpleSQL.impl.*;
 import simpleSQL.logger.EntityNotUniqueException;
 import simpleSQL.logger.Logger;
+import simpleSQL.logger.SimpleSQLException;
 import simpleSQL.logger.TableUnassignedException;
 
 import java.io.File;
@@ -52,12 +53,51 @@ public class InitConnection implements Connector {
 
     @Override
     public Database getDatabase() {
-        return this.DATABASE;
+        List<Table> tables = new ArrayList<>();
+        List<Cell> tableList = new ArrayList<>();
+        if (this.connType == Database.DatabaseType.MYSQL) {
+            tableList = executeQuery("SHOW TABLES").getColumns().get(0).getCells();
+        } else if (this.connType == Database.DatabaseType.SQLITE) {
+            tableList = executeQuery("SELECT name FROM sqlite_master WHERE type='table' ORDER BY name")
+                    .getColumns().get(0).getCells();
+        }
+        assert tableList != null;
+        if (tableList.size() == 0)
+            debug("No tables found", true);
+
+        //get Tables
+        for (Cell cell : tableList) {
+            tables.add(new TableByName(this, (String) cell.getData()));
+        }
+
+        switch (this.DATABASE.getDatabaseType()) {
+            case SQLITE -> {
+                debug("SQLite database retrieved with: " + tables.size() + " tables");
+                return new SQLite((SQLite) this.DATABASE, tables.toArray(new Table[0]));
+            }
+            case MYSQL -> {
+                debug("MySQL database retrieved with: " + tables.size() + " tables");
+
+                return new MySQL((MySQL) this.DATABASE, tables.toArray(new Table[0]));
+            }
+            default -> {
+                debug("No database connected!", true);
+                return null;
+            }
+        }
     }
 
     @Override
     public void debugMode(boolean b) {
         this.debugMode = b;
+        debug("Debug mode enabled");
+    }
+
+    @Override
+    public void debugMode(boolean b, boolean silent) {
+        this.debugMode = b;
+        if (!silent)
+            debug("Debug mode enabled");
     }
 
     @Override
@@ -66,7 +106,7 @@ public class InitConnection implements Connector {
     }
 
     @Override
-    public Connection getSQLConnection() {
+    public Connection getSQLConnection() throws SimpleSQLException {
         switch (this.connType) {
             case MYSQL -> {
                 MySQL mySQL = (MySQL) this.DATABASE;
@@ -138,7 +178,7 @@ public class InitConnection implements Connector {
                 }
                 ps.executeUpdate();
             }
-        } catch (SQLException e) {
+        } catch (SQLException | SimpleSQLException e) {
             e.printStackTrace();
         } finally {
             Connector.disconnector(conn, ps);
@@ -154,38 +194,49 @@ public class InitConnection implements Connector {
         try {
             conn = getSQLConnection();
             if (conn != null) {
+                //prepare statement
                 ps = conn.prepareStatement(sql);
                 int index = 1;
+                //add arguments in their order
                 for (Object param : parameters) {
                     ps.setObject(index, param);
                     index++;
                 }
                 ResultSet rs = ps.executeQuery();
+                debug("Query executed ready to tabulate response");
+                //organise results into a Table
                 int colCount = rs.getMetaData().getColumnCount();
-                for (int i = 1; i <= colCount; i++)
+                //get columns for table
+                for (int i = 1; i <= colCount; i++) {
                     columns.add(new CreateColumn(
                             rs.getMetaData().getColumnName(i),
                             Datatype.OBJECT
                     ));
+                }
+                //add cells
                 while (rs.next()) {
                     List<Cell> cells = new ArrayList<>();
+                    index = 1;
                     for (Column col : columns) {
                         col.addCell(new CreateCell(
                                 Datatype.OBJECT,
-                                rs.getObject(col.getName()),
+                                rs.getObject(index),
                                 col,
                                 false,
                                 false
                         ));
+                        index++;
                     }
                 }
             }
-        } catch (SQLException e) {
+        } catch (SQLException | SimpleSQLException e) {
             e.printStackTrace();
         } finally {
             Connector.disconnector(conn, ps);
         }
 
+        debug("Response tabulated");
+        debug("Retrieved: " + columns.size() + " columns with, " + columns.get(0).getCells().size() + " rows");
         return new CreateTable(
                 "Result set",
                 columns.toArray(new Column[0])
@@ -249,11 +300,8 @@ public class InitConnection implements Connector {
                     for (Column col : new TableByName(this, table).getColumns()) {
                         if (col == null) break;
                         if (Objects.equals(col.getName(), column.getName())) {
-                            if (this.debugMode)
-                                System.err.println(
-                                        "Column duplicate detected. Skipped writing column: " + table + "."
-                                                + column.getName()
-                                );
+                            debug("Column duplicate detected. Skipped writing column: " + table + "."
+                                    + column.getName(), true);
                             duplicate = true;
                             break;
                         }
@@ -284,11 +332,8 @@ public class InitConnection implements Connector {
                         for (Cell c1 : Objects.requireNonNull(col.getCells())) {
                             for (Cell c2 : row.getCells()) {
                                 if (Objects.equals(c1.getData(), c2.getData())) {
-                                    if (this.debugMode)
-                                        System.err.println(
-                                                "Row duplicate detected. Skipped writing row with unique cell value: '" +
-                                                        c2.getData() + "' in column: " + c2.getColumn().getName()
-                                        );
+                                    debug("Row duplicate detected. Skipped writing row with unique cell value: '" +
+                                            c2.getData() + "' in column: " + c2.getColumn().getName(), true);
                                     duplicate = true;
                                 }
                             }

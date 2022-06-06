@@ -12,9 +12,11 @@ public enum Datatype {
     VARCHAR(255),
     CHAR(255),
     INT,
+    INTEGER,
     FLOAT,
     DOUBLE,
     DATE,
+    DECIMAL,
     /**
      * {@code Datatype.OBJECT} is used as a placeholder for result sets and may result in errors if used to write to a
      * database
@@ -35,9 +37,11 @@ public enum Datatype {
             case VARCHAR -> "VARCHAR(" + datatype.getSize() + ")";
             case CHAR -> "CHAR(" + datatype.getSize() + ")";
             case INT -> "INT";
+            case INTEGER -> "INTEGER";
             case FLOAT -> "FLOAT";
             case DOUBLE -> "DOUBLE";
             case DATE -> "DATE";
+            case DECIMAL -> "DECIMAL";
             case OBJECT -> null;
         };
     }

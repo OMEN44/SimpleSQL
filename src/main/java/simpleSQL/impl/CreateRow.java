@@ -6,6 +6,7 @@ import simpleSQL.logger.TableUnassignedException;
 import javax.annotation.Nonnull;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 @SuppressWarnings("unused")
 public class CreateRow implements Row {
@@ -41,5 +42,30 @@ public class CreateRow implements Row {
     @Override
     public List<Cell> getCells() {
         return this.cells;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder top = new StringBuilder("|");
+        StringBuilder middle = new StringBuilder("|");
+        StringBuilder bottom = new StringBuilder("|");
+        for (Cell cell : this.cells) {
+            top.append(cell.getColumn().getName());
+            middle.append("-".repeat(cell.getColumn().getName().length()));
+            bottom.append(cell.getData());
+            int diff = cell.getColumn().getName().length() - cell.getData().toString().length();
+            if (diff < 0) {
+                //data longer
+                top.append(" ".repeat(-diff));
+                middle.append("-".repeat(-diff));
+            } else if (diff > 0) {
+                //name longer
+                bottom.append(" ".repeat(diff));
+            }
+            top.append(" |");
+            middle.append("-|");
+            bottom.append(" |");
+        }
+        return top + "\n" + middle + "\n" + bottom + "\n";
     }
 }

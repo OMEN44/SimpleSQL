@@ -8,6 +8,9 @@ import simpleSQL.logger.EntityNotUniqueException;
 import simpleSQL.logger.TableUnassignedException;
 
 import javax.annotation.Nonnull;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 
 @SuppressWarnings("unused")
 public class CreateCell extends BasicCellImpl implements Cell {
@@ -66,8 +69,20 @@ public class CreateCell extends BasicCellImpl implements Cell {
 
     @Nonnull
     @Override
-    public Row getRow() {
-        return null;
+    public Row getRow(Connector connector) throws TableUnassignedException, EntityNotUniqueException {
+        if (this.parentTable == null)
+            throw new TableUnassignedException("This object requires a table to preform this action");
+        if (this.rowIdentifier == null)
+            throw new EntityNotUniqueException("This cell needs a unique identifier");
+        Table table = connector.executeQuery(
+                "SELECT * FROM " + this.parentTable.getName() + " WHERE " +
+                        this.rowIdentifier.getColumn().getName() + "=?",
+                this.rowIdentifier.getData()
+        );
+        List<Cell> cells = new ArrayList<>();
+        for (Column c : table.getColumns())
+            cells.add(Objects.requireNonNull(c.getCells()).get(0));
+        return new CreateRow(cells.toArray(new Cell[0]));
     }
 
     @Nonnull
@@ -93,8 +108,7 @@ public class CreateCell extends BasicCellImpl implements Cell {
         Table table = connector.executeQuery(
                 "SELECT " + this.COLUMN.getName() + " FROM " + this.parentTable.getName()
         );
-        System.out.println(table.getColumns().get(0).getCells().size());
-        return null;
+        return table.getColumns().get(0);
     }
 
     @Override

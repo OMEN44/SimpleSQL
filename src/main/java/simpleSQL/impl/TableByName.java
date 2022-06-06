@@ -2,17 +2,15 @@ package simpleSQL.impl;
 
 import simpleSQL.connectors.Connector;
 import simpleSQL.connectors.dbProfiles.Database;
-import simpleSQL.entities.Column;
-import simpleSQL.entities.PrimaryColumn;
-import simpleSQL.entities.Row;
-import simpleSQL.entities.Table;
-import simpleSQL.logger.MissingColumnException;
+import simpleSQL.entities.*;
+import simpleSQL.logger.SimpleSQLException;
 
 import javax.annotation.Nonnull;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 @SuppressWarnings("unused")
 public class TableByName implements Table {
@@ -22,6 +20,11 @@ public class TableByName implements Table {
     private List<Row> rows;
 
     public TableByName(Connector connector, String name) {
+        boolean toggleDebug = false;
+        if (connector.isDebugMode()) {
+            connector.debugMode(false, true);
+            toggleDebug = true;
+        }
         this.NAME = name;
 
         Connection conn = null;
@@ -63,11 +66,13 @@ public class TableByName implements Table {
                     }
                     ps.close();
                 }
+                if (toggleDebug)
+                    connector.debugMode(true, true);
             }
         } catch (SQLSyntaxErrorException e) {
             if (connector.isDebugMode())
                 System.err.println("No such table with name: " + connector.getDatabase().getName() + "." + name);
-        } catch (SQLException | MissingColumnException e) {
+        } catch (SQLException | SimpleSQLException e) {
             e.printStackTrace();
         } finally {
             Connector.disconnector(conn, null);
@@ -108,7 +113,15 @@ public class TableByName implements Table {
 
     @Override
     public List<Row> getRows() {
-        System.err.println("unfinished");
+        this.rows = new ArrayList<>();
+        int size = Objects.requireNonNull(getColumns().get(0).getCells()).size();
+        for (int i = 0; i < size; i++) {
+            List<Cell> cells = new ArrayList<>();
+            for (Column col : getColumns()) {
+                cells.add(col.getCells().get(i));
+            }
+            this.rows.add(new CreateRow(cells.toArray(new Cell[0])));
+        }
         return rows;
     }
 
