@@ -1,4 +1,4 @@
-import simpleSQL.connectors.Connector;
+/*import simpleSQL.connectors.Connector;
 import simpleSQL.connectors.InitConnection;
 import simpleSQL.connectors.dbProfiles.Database;
 import simpleSQL.connectors.dbProfiles.MySQL;
@@ -45,10 +45,10 @@ public class Main {
 
         //get tableByName ignores primary keys
 
-        /*Table table = conn.executeQuery("SELECT * FROM pm_marriage");
+        *//*Table table = conn.executeQuery("SELECT * FROM pm_marriage");
         for (Row col : table.getRows()) {
             System.out.println(col);
-        }*/
+        }*//*
 
         for (Table tab : tables) {
             if (Objects.equals(tab.getName(), "pm_marriage")) {
@@ -59,4 +59,4 @@ public class Main {
             }
         }
     }
-}
+}*/
