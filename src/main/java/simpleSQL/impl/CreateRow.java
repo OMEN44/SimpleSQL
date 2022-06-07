@@ -53,7 +53,7 @@ public class CreateRow implements Row {
             top.append(cell.getColumn().getName());
             middle.append("-".repeat(cell.getColumn().getName().length()));
             bottom.append(cell.getData());
-            int diff = cell.getColumn().getName().length() - cell.getData().toString().length();
+            int diff = cell.getColumn().getName().length() - Objects.requireNonNull(cell.getData()).toString().length();
             if (diff < 0) {
                 //data longer
                 top.append(" ".repeat(-diff));

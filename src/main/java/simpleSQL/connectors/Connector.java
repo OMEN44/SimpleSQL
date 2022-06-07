@@ -3,10 +3,7 @@ package simpleSQL.connectors;
 import simpleSQL.connectors.dbProfiles.Database;
 import simpleSQL.entities.Entity;
 import simpleSQL.entities.Table;
-import simpleSQL.logger.EntityNotUniqueException;
-import simpleSQL.logger.Logger;
-import simpleSQL.logger.SimpleSQLException;
-import simpleSQL.logger.TableUnassignedException;
+import simpleSQL.logger.*;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -17,17 +14,6 @@ import java.sql.SQLException;
  */
 @SuppressWarnings("unused")
 public interface Connector {
-
-    default void debug(String message, Boolean... strong) {
-        if (isDebugMode()) {
-            if (strong.length >= 1) {
-                if (strong[0])
-                    System.err.println("[SSQL-ERROR]: " + message);
-                else
-                    System.out.println("[SSQL-DEBUG]: " + message);
-            } else System.out.println("[SSQL-DEBUG]: " + message);
-        }
-    }
 
     /**
      * @return Returns the {@link simpleSQL.connectors.dbProfiles.Database.DatabaseType} that is in use with the current connection.
@@ -43,7 +29,7 @@ public interface Connector {
      * @apiNote UNFINISHED
      * @return The database object that is in use. This can be used to get information like what host the database is running on.
      */
-    Database getDatabase();
+    Database getDatabase() throws MissingColumnException;
 
     /**
      * @return The correct connection for the database being used.
@@ -92,13 +78,7 @@ public interface Connector {
      */
     Table executeQuery(String sqlStatement, Object... parameters);
 
-    void writeToDatabase(Entity... entity) throws TableUnassignedException, EntityNotUniqueException;
-
-    void debugMode(boolean b);
-
-    void debugMode(boolean b, boolean silent);
-
-    boolean isDebugMode();
+    void writeToDatabase(Entity... entity) throws TableUnassignedException, EntityNotUniqueException, MissingColumnException;
 
     enum Status {
         NOT_READY,

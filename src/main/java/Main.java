@@ -1,17 +1,16 @@
-/*import simpleSQL.connectors.Connector;
+import simpleSQL.connectors.Connector;
 import simpleSQL.connectors.InitConnection;
-import simpleSQL.connectors.dbProfiles.Database;
 import simpleSQL.connectors.dbProfiles.MySQL;
 import simpleSQL.connectors.dbProfiles.SQLite;
 import simpleSQL.entities.Row;
 import simpleSQL.entities.Table;
-
-import java.util.List;
-import java.util.Objects;
+import simpleSQL.impl.TableByName;
+import simpleSQL.logger.Logger;
+import simpleSQL.logger.MissingColumnException;
 
 public class Main {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws MissingColumnException {
 
         @SuppressWarnings("unused")
         SQLite sqLite = new SQLite(
@@ -37,26 +36,17 @@ public class Main {
                 ""
         );
 
-        Connector conn = new InitConnection(sqLite);
-        conn.debugMode(true);
-
-        Database inUse = conn.getDatabase();
-        List<Table> tables = inUse.getTables();
+        Connector conn = new InitConnection(mySQL);
+        Logger.debugMode(true);
 
         //get tableByName ignores primary keys
 
-        *//*Table table = conn.executeQuery("SELECT * FROM pm_marriage");
+        Table table = new TableByName(conn, "pm_marriage");
         for (Row col : table.getRows()) {
             System.out.println(col);
-        }*//*
-
-        for (Table tab : tables) {
-            if (Objects.equals(tab.getName(), "pm_marriage")) {
-                System.out.println("TableByName");
-                for (Row col : tab.getRows()) {
-                    System.out.println(col);
-                }
-            }
         }
+
+
+
     }
-}*/
+}

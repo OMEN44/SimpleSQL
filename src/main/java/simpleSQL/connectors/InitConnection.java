@@ -5,10 +5,7 @@ import simpleSQL.connectors.dbProfiles.MySQL;
 import simpleSQL.connectors.dbProfiles.SQLite;
 import simpleSQL.entities.*;
 import simpleSQL.impl.*;
-import simpleSQL.logger.EntityNotUniqueException;
-import simpleSQL.logger.Logger;
-import simpleSQL.logger.SimpleSQLException;
-import simpleSQL.logger.TableUnassignedException;
+import simpleSQL.logger.*;
 
 import java.io.File;
 import java.io.IOException;
@@ -17,6 +14,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import static simpleSQL.logger.Logger.debug;
+import static simpleSQL.logger.Logger.log;
+
 @SuppressWarnings("unused")
 public class InitConnection implements Connector {
 
@@ -24,7 +24,6 @@ public class InitConnection implements Connector {
     private final Database.DatabaseType connType;
     public Connection connection;
     private Status status;
-    private boolean debugMode = false;
 
     public InitConnection(Database database) {
         switch (database.getDatabaseType()) {
@@ -39,6 +38,7 @@ public class InitConnection implements Connector {
         this.connType = database.getDatabaseType();
         this.DATABASE = database;
         this.status = Status.READY;
+        log("Connector is ready with " + databaseType() + " database for connection");
     }
 
     @Override
@@ -52,7 +52,7 @@ public class InitConnection implements Connector {
     }
 
     @Override
-    public Database getDatabase() {
+    public Database getDatabase() throws MissingColumnException {
         List<Table> tables = new ArrayList<>();
         List<Cell> tableList = new ArrayList<>();
         if (this.connType == Database.DatabaseType.MYSQL) {
@@ -88,24 +88,7 @@ public class InitConnection implements Connector {
     }
 
     @Override
-    public void debugMode(boolean b) {
-        this.debugMode = b;
-        debug("Debug mode enabled");
-    }
-
-    @Override
-    public void debugMode(boolean b, boolean silent) {
-        this.debugMode = b;
-        if (!silent)
-            debug("Debug mode enabled");
-    }
-
-    @Override
-    public boolean isDebugMode() {
-        return this.debugMode;
-    }
-
-    @Override
+    @SuppressWarnings("all")
     public Connection getSQLConnection() throws SimpleSQLException {
         switch (this.connType) {
             case MYSQL -> {
@@ -236,7 +219,8 @@ public class InitConnection implements Connector {
         }
 
         debug("Response tabulated");
-        debug("Retrieved: " + columns.size() + " columns with, " + columns.get(0).getCells().size() + " rows");
+        debug("Retrieved: " + columns.size() + " columns with, " +
+                Objects.requireNonNull(columns.get(0).getCells()).size() + " rows");
         return new CreateTable(
                 "Result set",
                 columns.toArray(new Column[0])
@@ -244,7 +228,7 @@ public class InitConnection implements Connector {
     }
 
     @Override
-    public void writeToDatabase(Entity... entities) throws TableUnassignedException, EntityNotUniqueException {
+    public void writeToDatabase(Entity... entities) throws TableUnassignedException, EntityNotUniqueException, MissingColumnException {
         for (Entity entity : entities) {
             System.out.println(entity.getEntityType());
             switch (entity.getEntityType()) {

@@ -195,7 +195,7 @@ public class ColumnByName implements Column {
                 .append("\n");
         sb.append("=".repeat(this.getName().length()))
                 .append("\n");
-        for (int i = 0; i < getCells().size() - 1; i++) {
+        for (int i = 0; i < Objects.requireNonNull(getCells()).size() - 1; i++) {
             sb.append(getCells().get(i).getData())
                     .append("\n");
         }
