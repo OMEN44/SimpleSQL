@@ -13,16 +13,17 @@ used to execute and queries and updates.<br>
    - The `createTable` class, this produces a table that can be edited and written to the database, the purpose of this
      is for creating new tables and editing the structure of the database. It can contain data, but its main intention is for 
      setting up databases.<br>
-   - The `TableByName` class, this uses the name of the table and the connector in use to get a table object. This table 
+   - The `TableByName` class, this uses the name of the table and the connector in used to get a table object. This table 
      objects purpose is for reading and getting data. It cannot be edited or written to a database to prevent data 
      duplication and errors.
  - Columns and rows are similar in the way that they are both containers for cells, the 
-   difference being that columns have a name and hold constraints and the column name and contraints is held by the 
+   difference being that columns have a name and hold constraints and the column name and constraints is held by the 
    cells in a row.
+ - Cells can contain unique and primary constraints, but it is more likely that these constraints will be accessible from 
+   its column which will be held by the cell given it's not a BasicCell
 
 
 <h3>How to create a connection:<h3/>
-
 ```java
 import simpleSQL.connectors.Connector;
 import simpleSQL.connectors.InitConnection;
@@ -50,4 +51,10 @@ public class Main {
         Connector sqliteConn = new InitConnection(sqLite);
     }
 }
+```
+
+<h3>How to execute simple queries and updates:<h3/>
+<p>It is assumed that the connection above has been created</p>
+```java
+public
 ```
