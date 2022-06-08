@@ -55,6 +55,3 @@ public class Main {
 
 <h3>How to execute simple queries and updates:<h3/>
 <p>It is assumed that the connection above has been created</p>
-```java
-public
-```
