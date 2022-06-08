@@ -23,6 +23,33 @@ used to execute and queries and updates.<br>
    its column which will be held by the cell given it's not a BasicCell
 
 
-### How to create a connection:
-### How to execute simple queries and updates:
+<h3>How to create a connection:<h3/>
+`import simpleSQL.connectors.Connector;
+import simpleSQL.connectors.InitConnection;
+import simpleSQL.connectors.dbProfiles.MySQL;
+
+public class Main {
+    public static void main(String[] args) {
+        //MySQL connection:
+        MySQL mySQL = new MySQL(
+                3306,
+                "DatabaseName",
+                "localhost",
+                "root",
+                "password"
+        );
+
+        Connector mySqlConn = new InitConnection(mySQL);
+
+        //SQLite connection:
+        SQLite sqLite = new SQLite(
+                "testing",
+                "C:\\JavaPrograms\\database"
+        );
+
+        Connector sqliteConn = new InitConnection(sqLite);
+    }
+}`
+
+<h3>How to execute simple queries and updates:<h3/>
 <p>It is assumed that the connection above has been created</p>
