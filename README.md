@@ -24,8 +24,7 @@ used to execute and queries and updates.<br>
 
 
 <h3>How to create a connection:<h3/>
-```
-import simpleSQL.connectors.Connector;
+`import simpleSQL.connectors.Connector;
 import simpleSQL.connectors.InitConnection;
 import simpleSQL.connectors.dbProfiles.MySQL;
 
@@ -50,8 +49,7 @@ public class Main {
 
         Connector sqliteConn = new InitConnection(sqLite);
     }
-}
-```
+}`
 
 <h3>How to execute simple queries and updates:<h3/>
 <p>It is assumed that the connection above has been created</p>
