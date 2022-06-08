@@ -24,7 +24,7 @@ used to execute and queries and updates.<br>
 
 
 <h3>How to create a connection:<h3/>
-```java
+```
 import simpleSQL.connectors.Connector;
 import simpleSQL.connectors.InitConnection;
 import simpleSQL.connectors.dbProfiles.MySQL;
