@@ -22,8 +22,65 @@ used to execute and queries and updates.<br>
  - Cells can contain unique and primary constraints, but it is more likely that these constraints will be accessible from 
    its column which will be held by the cell given it's not a BasicCell
 
+## Code Examples
 
-## How to create a connection:
+```java
+import simpleSQL.connectors.Connector;
+import simpleSQL.connectors.InitConnection;
+import simpleSQL.entities.Column;
 
-## How to execute simple queries and updates:
-It is assumed that the connection above has been created
+public class Main {
+    public static void main(String[] args) {
+
+        //==============================================
+        //  How to create a connection with a database      
+        //==============================================
+
+        //connection for sqlite database
+        SQLite sqLite = new SQLite(
+                "testing",
+                "your\\file\\path\\"
+        );
+
+        //connection for mysql database
+        MySQL mySQL = new MySQL(
+                3306,
+                "pmdb",
+                "localhost",
+                "root",
+                ""
+        );
+
+        //connect to your chosen database
+        Connector conn = new InitConnection(mySQL/*replace this with the db profile you want*/);
+        System.out.println(conn.getStatus());
+
+        //==============================================
+        //  How to execute simple queries and updates:      
+        //==============================================
+
+        //executing updates is simple:
+        conn.executeUpdate("DELETE * FROM school WHERE `age`=18");
+        //executing quires has a few more steps:
+        Table result = conn.executeQuery("SELECT * FROM school WHERE name=?", "james");
+        for (Column col : table.getColumns()) {
+            //print the column if its name is "Subject"
+            if (col.getName().equals("Subject")) {
+                System.out.println(col);
+            }
+        }
+
+        //==============================================
+        //  How to use objects only to get data:      
+        //==============================================
+        
+        List<Table> tables = conn.getDatabase().getTables();
+        //prints all the tables that were retrieved from the selected db
+        //inside this for loop you can access all the entities of each table 
+        //or by using table.get(x)
+        for (Table table : tables) {
+            System.out.println(table);
+        }
+    }
+}
+```

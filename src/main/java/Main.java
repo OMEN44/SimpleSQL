@@ -2,7 +2,6 @@ import simpleSQL.connectors.Connector;
 import simpleSQL.connectors.InitConnection;
 import simpleSQL.connectors.dbProfiles.MySQL;
 import simpleSQL.connectors.dbProfiles.SQLite;
-import simpleSQL.entities.Row;
 import simpleSQL.entities.Table;
 import simpleSQL.impl.TableByName;
 import simpleSQL.logger.Logger;
