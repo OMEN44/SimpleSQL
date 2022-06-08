@@ -42,9 +42,8 @@ public class Main {
         //get tableByName ignores primary keys
 
         Table table = new TableByName(conn, "pm_marriage");
-        for (Row col : table.getRows()) {
-            System.out.println(col);
-        }
+        System.out.println(table.getRows().get(0));
+        System.out.println(table);
 
 
 
