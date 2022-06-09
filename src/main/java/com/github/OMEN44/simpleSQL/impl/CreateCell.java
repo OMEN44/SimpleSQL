@@ -1,6 +1,5 @@
 package com.github.OMEN44.simpleSQL.impl;
 
-import com.github.OMEN44.boxer.Boxer;
 import com.github.OMEN44.simpleSQL.connectors.Connector;
 import com.github.OMEN44.simpleSQL.entities.*;
 import com.github.OMEN44.simpleSQL.logger.EntityNotUniqueException;
@@ -134,16 +133,9 @@ public class CreateCell extends BasicCellImpl implements Cell {
 
     @Override
     public String toString() {
-        Boxer boxer;
-        if (this.DATA == null)
-            boxer = new Boxer("NULL");
-        else
-            boxer = new Boxer(this.DATA.toString());
-        String title = this.COLUMN.getName();
-        if (this.parentTable != null)
-            title = this.parentTable.getName() + "." + title;
-        boxer.addTitle(title).addFooter(this.DATATYPE.toString());
-        boxer.buildBox();
-        return boxer.getOutput();
+        assert this.DATA != null;
+        return "Datatype | " + this.DATATYPE +
+                "\nData     | " + this.DATA +
+                "\nColumn   | " + this.COLUMN.getName();
     }
 }

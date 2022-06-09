@@ -1,6 +1,5 @@
 package com.github.OMEN44.simpleSQL.impl;
 
-import com.github.OMEN44.boxer.Boxer;
 import com.github.OMEN44.simpleSQL.connectors.Datatype;
 import com.github.OMEN44.simpleSQL.entities.*;
 import com.github.OMEN44.simpleSQL.logger.TableUnassignedException;
@@ -53,8 +52,7 @@ public class BasicCellImpl implements BasicCell {
 
     @Override
     public String toString() {
-        Boxer boxer = new Boxer(this.DATA.toString()).addFooter(this.DATATYPE.toString());
-        boxer.buildBox();
-        return boxer.getOutput();
+        return "Datatype | " + this.DATATYPE +
+                "\nData     | " + this.DATA;
     }
 }
