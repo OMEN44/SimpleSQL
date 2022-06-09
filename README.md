@@ -25,9 +25,9 @@ used to execute and queries and updates.<br>
 ## Code Examples
 
 ```java
-import simpleSQL.connectors.Connector;
-import simpleSQL.connectors.InitConnection;
-import simpleSQL.entities.Column;
+import Connector;
+import InitConnection;
+import Column;
 
 public class Main {
     public static void main(String[] args) {
@@ -73,7 +73,7 @@ public class Main {
         //==============================================
         //  How to use objects only to get data:      
         //==============================================
-        
+
         List<Table> tables = conn.getDatabase().getTables();
         //prints all the tables that were retrieved from the selected db
         //inside this for loop you can access all the entities of each table 
