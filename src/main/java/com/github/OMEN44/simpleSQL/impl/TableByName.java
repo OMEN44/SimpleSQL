@@ -3,7 +3,6 @@ package com.github.OMEN44.simpleSQL.impl;
 import com.github.OMEN44.simpleSQL.connectors.Connector;
 import com.github.OMEN44.simpleSQL.entities.*;
 import com.github.OMEN44.simpleSQL.logger.MissingColumnException;
-import simpleSQL.entities.*;
 import com.github.OMEN44.simpleSQL.logger.Logger;
 
 import javax.annotation.Nonnull;

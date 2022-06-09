@@ -4,7 +4,6 @@ import com.github.OMEN44.simpleSQL.connectors.dbProfiles.Database;
 import com.github.OMEN44.simpleSQL.logger.*;
 import com.github.OMEN44.simpleSQL.entities.Entity;
 import com.github.OMEN44.simpleSQL.entities.Table;
-import simpleSQL.logger.*;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;

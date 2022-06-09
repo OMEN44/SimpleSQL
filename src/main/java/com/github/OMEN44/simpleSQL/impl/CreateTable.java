@@ -2,7 +2,6 @@ package com.github.OMEN44.simpleSQL.impl;
 
 import com.github.OMEN44.simpleSQL.entities.*;
 import com.github.OMEN44.simpleSQL.logger.EntityNotUniqueException;
-import simpleSQL.entities.*;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;

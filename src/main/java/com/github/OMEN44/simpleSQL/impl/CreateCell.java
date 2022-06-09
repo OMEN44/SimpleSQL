@@ -6,7 +6,6 @@ import com.github.OMEN44.simpleSQL.entities.*;
 import com.github.OMEN44.simpleSQL.logger.EntityNotUniqueException;
 import com.github.OMEN44.simpleSQL.logger.TableUnassignedException;
 import com.github.OMEN44.simpleSQL.connectors.Datatype;
-import simpleSQL.entities.*;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;

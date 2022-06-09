@@ -10,7 +10,6 @@ import com.github.OMEN44.simpleSQL.entities.Table;
 import com.github.OMEN44.simpleSQL.logger.MissingColumnException;
 import com.github.OMEN44.simpleSQL.logger.SimpleSQLException;
 import com.github.OMEN44.simpleSQL.logger.TableUnassignedException;
-import simpleSQL.entities.*;
 
 import javax.annotation.Nonnull;
 import java.sql.Connection;

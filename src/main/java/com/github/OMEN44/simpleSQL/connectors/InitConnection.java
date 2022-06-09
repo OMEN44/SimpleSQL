@@ -9,9 +9,6 @@ import com.github.OMEN44.simpleSQL.impl.CreateColumn;
 import com.github.OMEN44.simpleSQL.impl.CreateTable;
 import com.github.OMEN44.simpleSQL.impl.TableByName;
 import com.github.OMEN44.simpleSQL.logger.*;
-import simpleSQL.entities.*;
-import simpleSQL.impl.*;
-import simpleSQL.logger.*;
 
 import java.io.File;
 import java.io.IOException;
@@ -170,7 +167,7 @@ public class InitConnection implements Connector {
         } catch (SQLException | SimpleSQLException e) {
             e.printStackTrace();
         } finally {
-            disconnector(conn, ps);
+            Connector.disconnector(conn, ps);
         }
     }
 
@@ -221,7 +218,7 @@ public class InitConnection implements Connector {
         } catch (SQLException | SimpleSQLException e) {
             e.printStackTrace();
         } finally {
-            disconnector(conn, ps);
+            Connector.disconnector(conn, ps);
         }
 
         debug("Response tabulated");
