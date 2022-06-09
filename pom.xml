@@ -6,7 +6,7 @@
 
     <groupId>com.github.OMEN44.simplesql</groupId>
     <artifactId>SimpleSQL</artifactId>
-    <version>0.1-ALPHA</version>
+    <version>0.1.4-ALPHA</version>
     <packaging>jar</packaging>
 
     <properties>
