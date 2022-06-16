@@ -34,7 +34,6 @@ public class TableByName implements Table {
 
         //add column constraints and data
         this.columns = new ArrayList<>();
-        log(cols.size());
         for (Column col : cols) {
             Column byName = new ColumnByName(connector, col.getName(), name);
             this.columns.add(new CreateColumn(
@@ -97,8 +96,12 @@ public class TableByName implements Table {
         for (Column col : getColumns()) {
             colWidth.add(col.getName().length());
             for (Cell cell : Objects.requireNonNull(col.getCells())) {
-                if (colWidth.get(getColumns().indexOf(col)) <
-                        Objects.requireNonNull(cell.getData()).toString().length()) {
+                int dataLength;
+                if (cell.getData() == null)
+                    dataLength = 4;
+                else
+                    dataLength = cell.getData().toString().length();
+                if (colWidth.get(getColumns().indexOf(col)) < dataLength) {
                     colWidth.set(getColumns().indexOf(col), cell.getData().toString().length());
                 }
             }
@@ -128,8 +131,13 @@ public class TableByName implements Table {
             int i = 0;
             StringBuilder line = new StringBuilder();
             for (Cell cell : row.getCells()) {
-                line.append("|").append(Objects.requireNonNull(cell.getData()))
-                        .append(" ".repeat(colWidth.get(i) - cell.getData().toString().length() + 1));
+                Object data;
+                if (cell.getData() == null)
+                    data = "NULL";
+                else
+                    data = cell.getData();
+                line.append("|").append(data)
+                        .append(" ".repeat(colWidth.get(i) - data.toString().length() + 1));
                 i++;
             }
             sb.append(line).append("|\n").append(hWall);

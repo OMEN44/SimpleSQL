@@ -84,3 +84,11 @@ public class Main {
     }
 }
 ```
+
+### Release plan:
+* ALPHA - This stage in the release plan the main functions of this library are created:
+  * 0.1.9 - update methods relating to getting and setting cells, as well as finishing methods such as getRow and getColumn in the Cell class
+  * 0.2 - allow multiple primary columns in tables and add composite keys and foreign keys
+* BETA - This stage in the release focuses on usability and removing bugs:
+  * 0.2 - Improve print and include boxerLib in the library
+  * 0.3 - 
