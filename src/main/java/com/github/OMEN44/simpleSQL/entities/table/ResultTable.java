@@ -48,6 +48,14 @@ public class ResultTable implements Table {
         return colIndex;
     }
 
+    public int getColIndexMax() {
+        return colIndexMax;
+    }
+
+    public int getRowIndexMax() {
+        return rowIndexMax;
+    }
+
     public boolean isEmpty() {
         if (this.COLUMNS.size() == 0) return true;
         else return this.COLUMNS.get(0).getCells().size() != 0;
@@ -93,9 +101,10 @@ public class ResultTable implements Table {
         return true;
     }
 
-    public ResultTable nextCol(int reps) {
-        this.colIndex += reps;
-        return this;
+    public boolean nextCol(int i) {
+        if (this.colIndex == this.colIndexMax - 1) return false;
+        this.colIndex+=i;
+        return true;
     }
 
     public ResultTable nextRow() {
@@ -105,26 +114,6 @@ public class ResultTable implements Table {
 
     public ResultTable nextRow(int reps) {
         this.rowIndex += reps;
-        return this;
-    }
-
-    public ResultTable prevCol() {
-        this.colIndex--;
-        return this;
-    }
-
-    public ResultTable prevCol(int reps) {
-        this.colIndex -= reps;
-        return this;
-    }
-
-    public ResultTable prevRow() {
-        this.rowIndex--;
-        return this;
-    }
-
-    public ResultTable prevRow(int reps) {
-        this.rowIndex -= reps;
         return this;
     }
 

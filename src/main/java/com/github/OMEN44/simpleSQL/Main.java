@@ -1,14 +1,11 @@
 package com.github.OMEN44.simpleSQL;
 
 import com.github.OMEN44.simpleSQL.connectors.Connector;
-import com.github.OMEN44.simpleSQL.connectors.Datatype;
 import com.github.OMEN44.simpleSQL.connectors.InitConnection;
 import com.github.OMEN44.simpleSQL.connectors.dbProfiles.MySQL;
 import com.github.OMEN44.simpleSQL.connectors.dbProfiles.SQLite;
-import com.github.OMEN44.simpleSQL.entities.column.*;
-import com.github.OMEN44.simpleSQL.entities.table.CreateTable;
-import com.github.OMEN44.simpleSQL.entities.table.ResultTable;
-import com.github.OMEN44.simpleSQL.entities.table.Table;
+import com.github.OMEN44.simpleSQL.entities.column.Column;
+import com.github.OMEN44.simpleSQL.entities.column.ColumnByName;
 import com.github.OMEN44.simpleSQL.logger.Logger;
 import com.github.OMEN44.simpleSQL.logger.MissingColumnException;
 
@@ -39,14 +36,9 @@ public class Main {
         //sqlite
         Connector connector = new InitConnection(sqLite);
 
-        ResultTable rt = connector.executeQuery("SELECT * FROM clients");
-        while (rt.nextCol()) {
-            System.out.println(rt.getCol().getName());
-        }
-
         //mySQL
         Connector connectorSQL = new InitConnection(mySQL);
-        Column col = new ColumnByName(connector, "client_id", "clients");
+        Column col = new ColumnByName(connector, "GenreId", "tracks");
 
         System.out.println(col.isPrimary());
         System.out.println(col.isUnique());

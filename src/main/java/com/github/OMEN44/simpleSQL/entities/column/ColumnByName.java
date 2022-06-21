@@ -29,11 +29,18 @@ public class ColumnByName implements Column {
     private Table PARENT_TABLE;
 
     public ColumnByName(Connector connector, String columnName, String tableName) throws MissingColumnException {
+        boolean toggleDebug = false;
+        if (Logger.isDebugMode()) {
+            Logger.debugMode(false, true);
+            toggleDebug = true;
+        }
+
         //set name and cells
         this.NAME = columnName;
         List<Cell> cells = new ArrayList<>();
         ResultTable r = connector.executeQuery("SELECT " + columnName + " FROM " + tableName);
-        if (r.next()) {
+        if (r.getColIndexMax() != 0) {
+            r.nextCol();
             this.CELLS = r.getCol().getCells();
         } else {
             throw new MissingColumnException("The column " + columnName + " was not found in " + tableName);
@@ -61,10 +68,7 @@ public class ColumnByName implements Column {
                                 primaryKey = true;
                                 isUnique = true;
                             }
-                            case "MUL" -> {
-                                foreignKey = true;
-                                isUnique = true;
-                            }
+                            case "MUL" -> foreignKey = true;
                             case "UNI" -> isUnique = true;
                         }
                         break;
@@ -79,6 +83,18 @@ public class ColumnByName implements Column {
                         notNull = row.getCells().get(3).getData().toString().equals("1");
                         defaultValue = row.getCells().get(4).getData();
                         primaryKey = row.getCells().get(5).getData().toString().equals("1");
+                        // get other unique constraints
+                        ResultTable rt = connector.executeQuery("PRAGMA index_list(" + tableName + ")");
+                        Column uniqueCols = rt.getColumns().get(1);
+                        for (Row currentRow : rt.getRows()) {
+                            ResultTable resultTable = connector.executeQuery(
+                                    "PRAGMA index_info(" + currentRow.getCells().get(1).getData() + ")");
+                            if (resultTable.getColumns().get(2).getCells().get(0).getData().equals(columnName)) {
+                                isUnique = currentRow.getCells().get(2).getData().toString().equals("1");
+                                foreignKey = currentRow.getCells().get(3).getData().toString().equals("c");
+                                break;
+                            }
+                        }
                         //to get the rest of the constraints use: PRAGMA index_list(table_name); then use
                         // PRAGMA index_info(index_name); to find if the column being searched is the correct one.
                         break;
@@ -92,6 +108,9 @@ public class ColumnByName implements Column {
         this.IS_UNIQUE = isUnique;
         this.PRIMARY_KEY = primaryKey;
         this.FOREIGN_KEY = foreignKey;
+
+        if (toggleDebug)
+            Logger.debugMode(true, true);
     }
 
     @Nonnull

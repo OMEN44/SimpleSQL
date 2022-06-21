@@ -71,8 +71,10 @@ public class CreateColumn implements Column {
         return this;
     }
 
+    @Nonnull
     @Override
     public List<Cell> getCells() {
+        if (this.cells == null) return new ArrayList<>();
         return this.cells;
     }
 
