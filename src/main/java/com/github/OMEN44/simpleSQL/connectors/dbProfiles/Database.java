@@ -1,6 +1,6 @@
 package com.github.OMEN44.simpleSQL.connectors.dbProfiles;
 
-import com.github.OMEN44.simpleSQL.entities.Table;
+import com.github.OMEN44.simpleSQL.entities.table.Table;
 
 import java.util.List;
 

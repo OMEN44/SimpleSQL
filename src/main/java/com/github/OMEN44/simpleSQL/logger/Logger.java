@@ -24,7 +24,7 @@ public class Logger {
         if (isDebugMode()) {
             if (strong.length >= 1) {
                 if (strong[0])
-                    System.err.println("[SSQL-ERROR]: " + message);
+                    System.err.println("[SSQL-DEBUG]: " + message);
                 else
                     System.out.println("[SSQL-DEBUG]: " + message);
             } else System.out.println("[SSQL-DEBUG]: " + message);
@@ -55,7 +55,7 @@ public class Logger {
     public static final String ANSI_WHITE = "\u001B[37m";
 
     public static void log(Object message) {
-        System.out.println("[SSQL-STATE]: " + message);
+        System.out.println("[SSQL-INFO]: " + message);
     }
 
     /**
@@ -64,11 +64,11 @@ public class Logger {
      */
     public static void log(Object message, int logLevel) {
         switch (logLevel) {
-            case 1 -> System.out.println(ANSI_GREEN + "[SSQL-STATE]: " + message + ANSI_RESET);
-            case 2 -> System.out.println(ANSI_BLUE + "[SSQL-STATE]: " + message + ANSI_RESET);
-            case 3 -> System.out.println(ANSI_CYAN + "[SSQL-STATE]: " + message + ANSI_RESET);
-            case 4 -> System.out.println(ANSI_YELLOW + "[SSQL-STATE]: " + message + ANSI_RESET);
-            case 5 -> System.out.println(ANSI_RED + "[SSQL-STATE]: " + message + ANSI_RESET);
+            case 1 -> System.out.println(ANSI_GREEN + "[SSQL-INFO]: " + message + ANSI_RESET);
+            case 2 -> System.out.println(ANSI_BLUE + "[SSQL-INFO]: " + message + ANSI_RESET);
+            case 3 -> System.out.println(ANSI_CYAN + "[SSQL-INFO]: " + message + ANSI_RESET);
+            case 4 -> System.out.println(ANSI_YELLOW + "[SSQL-INFO]: " + message + ANSI_RESET);
+            case 5 -> System.out.println(ANSI_RED + "[SSQL-INFO]: " + message + ANSI_RESET);
         }
     }
 

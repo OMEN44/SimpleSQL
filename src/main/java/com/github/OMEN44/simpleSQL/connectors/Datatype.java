@@ -32,6 +32,12 @@ public enum Datatype {
 
     public Integer getSize() {return this.size;}
 
+    public static Datatype datatypeOf(String value) {
+        if (value.contains("(")) {
+            return Datatype.valueOf(value.substring(0, value.indexOf("(")).toUpperCase());
+        } else return Datatype.valueOf(value.toUpperCase());
+    }
+
     public static String toString(Datatype datatype) {
         return switch (datatype) {
             case VARCHAR -> "VARCHAR(" + datatype.getSize() + ")";

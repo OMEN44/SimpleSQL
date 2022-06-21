@@ -1,7 +1,9 @@
-package com.github.OMEN44.simpleSQL.impl;
+package com.github.OMEN44.simpleSQL.entities.cell;
 
 import com.github.OMEN44.simpleSQL.connectors.Datatype;
 import com.github.OMEN44.simpleSQL.entities.*;
+import com.github.OMEN44.simpleSQL.entities.column.Column;
+import com.github.OMEN44.simpleSQL.entities.table.Table;
 import com.github.OMEN44.simpleSQL.logger.TableUnassignedException;
 
 import javax.annotation.Nonnull;
@@ -35,6 +37,7 @@ public class BasicCellImpl implements BasicCell {
         return this;
     }
 
+    @Nonnull
     @Override
     public Object getData() {
         return this.DATA;

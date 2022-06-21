@@ -1,7 +1,11 @@
-package com.github.OMEN44.simpleSQL.impl;
+package com.github.OMEN44.simpleSQL.entities.cell;
 
 import com.github.OMEN44.simpleSQL.connectors.Connector;
 import com.github.OMEN44.simpleSQL.entities.*;
+import com.github.OMEN44.simpleSQL.entities.column.Column;
+import com.github.OMEN44.simpleSQL.entities.row.Row;
+import com.github.OMEN44.simpleSQL.entities.table.Table;
+import com.github.OMEN44.simpleSQL.entities.row.CreateRow;
 import com.github.OMEN44.simpleSQL.logger.EntityNotUniqueException;
 import com.github.OMEN44.simpleSQL.logger.TableUnassignedException;
 import com.github.OMEN44.simpleSQL.connectors.Datatype;
@@ -68,25 +72,7 @@ public class CreateCell extends BasicCellImpl implements Cell {
 
     @Nonnull
     @Override
-    public Row getRow(Connector connector) throws TableUnassignedException, EntityNotUniqueException {
-        if (this.parentTable == null)
-            throw new TableUnassignedException("This object requires a table to preform this action");
-        if (this.rowIdentifier == null)
-            throw new EntityNotUniqueException("This cell needs a unique identifier");
-        Table table = connector.executeQuery(
-                "SELECT * FROM " + this.parentTable.getName() + " WHERE " +
-                        this.rowIdentifier.getColumn().getName() + "=?",
-                this.rowIdentifier.getData()
-        );
-        List<Cell> cells = new ArrayList<>();
-        for (Column c : table.getColumns())
-            cells.add(Objects.requireNonNull(c.getCells()).get(0));
-        return new CreateRow(cells.toArray(new Cell[0]));
-    }
-
-    @Nonnull
-    @Override
-    public Cell setRowIdentifier(@Nonnull Cell uniqueCell) throws EntityNotUniqueException {
+    public Cell setRowIdentifier(@Nonnull UniqueCell uniqueCell) throws EntityNotUniqueException {
         if (!uniqueCell.isUnique() && !uniqueCell.isPrimary() &&
                 !uniqueCell.getColumn().isUnique() && !uniqueCell.getColumn().isPrimary())
             throw new EntityNotUniqueException("Cell provided for row identifier must be either unique or primary");
@@ -120,6 +106,7 @@ public class CreateCell extends BasicCellImpl implements Cell {
         return IS_PRIMARY;
     }
 
+    @Nonnull
     @Override
     public Object getData() {
         return DATA;

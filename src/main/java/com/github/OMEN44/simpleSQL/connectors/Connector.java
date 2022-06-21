@@ -1,9 +1,10 @@
 package com.github.OMEN44.simpleSQL.connectors;
 
 import com.github.OMEN44.simpleSQL.connectors.dbProfiles.Database;
+import com.github.OMEN44.simpleSQL.entities.table.ResultTable;
 import com.github.OMEN44.simpleSQL.logger.*;
 import com.github.OMEN44.simpleSQL.entities.Entity;
-import com.github.OMEN44.simpleSQL.entities.Table;
+import com.github.OMEN44.simpleSQL.entities.table.Table;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -76,7 +77,7 @@ public interface Connector {
      * @return Returns the results in the form of a table.
      * @apiNote This method adds result cells to rows not columns. You must iterate through rows not columns.
      */
-    Table executeQuery(String sqlStatement, Object... parameters);
+    ResultTable executeQuery(String sqlStatement, Object... parameters);
 
     void writeToDatabase(Entity... entity) throws TableUnassignedException, EntityNotUniqueException, MissingColumnException;
 

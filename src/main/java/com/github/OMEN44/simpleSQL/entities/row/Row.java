@@ -1,4 +1,7 @@
-package com.github.OMEN44.simpleSQL.entities;
+package com.github.OMEN44.simpleSQL.entities.row;
+
+import com.github.OMEN44.simpleSQL.entities.HasTable;
+import com.github.OMEN44.simpleSQL.entities.cell.Cell;
 
 import java.util.List;
 

@@ -1,9 +1,8 @@
-package com.github.OMEN44.simpleSQL.impl;
+package com.github.OMEN44.simpleSQL.entities.row;
 
-import com.github.OMEN44.simpleSQL.entities.Cell;
 import com.github.OMEN44.simpleSQL.entities.Entity;
-import com.github.OMEN44.simpleSQL.entities.Row;
-import com.github.OMEN44.simpleSQL.entities.Table;
+import com.github.OMEN44.simpleSQL.entities.cell.Cell;
+import com.github.OMEN44.simpleSQL.entities.table.Table;
 import com.github.OMEN44.simpleSQL.logger.TableUnassignedException;
 
 import javax.annotation.Nonnull;

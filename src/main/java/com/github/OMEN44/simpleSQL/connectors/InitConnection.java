@@ -3,11 +3,15 @@ package com.github.OMEN44.simpleSQL.connectors;
 import com.github.OMEN44.simpleSQL.connectors.dbProfiles.Database;
 import com.github.OMEN44.simpleSQL.connectors.dbProfiles.MySQL;
 import com.github.OMEN44.simpleSQL.connectors.dbProfiles.SQLite;
-import com.github.OMEN44.simpleSQL.entities.*;
-import com.github.OMEN44.simpleSQL.impl.CreateCell;
-import com.github.OMEN44.simpleSQL.impl.CreateColumn;
-import com.github.OMEN44.simpleSQL.impl.CreateTable;
-import com.github.OMEN44.simpleSQL.impl.TableByName;
+import com.github.OMEN44.simpleSQL.entities.Entity;
+import com.github.OMEN44.simpleSQL.entities.cell.Cell;
+import com.github.OMEN44.simpleSQL.entities.cell.CreateCell;
+import com.github.OMEN44.simpleSQL.entities.column.Column;
+import com.github.OMEN44.simpleSQL.entities.column.CreateColumn;
+import com.github.OMEN44.simpleSQL.entities.row.Row;
+import com.github.OMEN44.simpleSQL.entities.table.CreateTable;
+import com.github.OMEN44.simpleSQL.entities.table.ResultTable;
+import com.github.OMEN44.simpleSQL.entities.table.Table;
 import com.github.OMEN44.simpleSQL.logger.*;
 
 import java.io.File;
@@ -56,7 +60,7 @@ public class InitConnection implements Connector {
 
     @Override
     public Database getDatabase() throws MissingColumnException {
-        List<Table> tables = new ArrayList<>();
+        /*List<Table> tables = new ArrayList<>();
         List<Cell> tableList = new ArrayList<>();
         if (this.connType == Database.DatabaseType.MYSQL) {
             tableList = executeQuery("SHOW TABLES").getColumns().get(0).getCells();
@@ -87,7 +91,8 @@ public class InitConnection implements Connector {
                 debug("No database connected!", true);
                 return null;
             }
-        }
+        }*/
+        return null;
     }
 
     @Override
@@ -172,7 +177,7 @@ public class InitConnection implements Connector {
     }
 
     @Override
-    public Table executeQuery(String sql, Object... parameters) {
+    public ResultTable executeQuery(String sql, Object... parameters) {
         Connection conn = null;
         PreparedStatement ps = null;
         List<Column> columns = new ArrayList<>();
@@ -188,7 +193,13 @@ public class InitConnection implements Connector {
                     ps.setObject(index, param);
                     index++;
                 }
-                ResultSet rs = ps.executeQuery();
+                ResultSet rs;
+                try {
+                    rs = ps.executeQuery();
+                } catch (SQLSyntaxErrorException e) {
+                    Logger.debug(e.getMessage() + " returning empty table...", true);
+                    return new ResultTable(sql);
+                }
                 debug("Query executed ready to tabulate response");
                 //organise results into a Table
                 int colCount = rs.getMetaData().getColumnCount();
@@ -224,21 +235,21 @@ public class InitConnection implements Connector {
         debug("Response tabulated");
         debug("Retrieved: " + columns.size() + " columns with, " +
                 Objects.requireNonNull(columns.get(0).getCells()).size() + " rows");
-        return new CreateTable(
-                "Result set",
+        return new ResultTable(
+                sql,
                 columns.toArray(new Column[0])
-        )/*.setRows(rows.toArray(new Row[0]))*/;
+        );
     }
 
     @Override
     public void writeToDatabase(Entity... entities) throws TableUnassignedException, EntityNotUniqueException, MissingColumnException {
-        for (Entity entity : entities) {
+        /*for (Entity entity : entities) {
             System.out.println(entity.getEntityType());
             switch (entity.getEntityType()) {
                 case TABLE -> {
                     Table table = (Table) entity;
                     //check if the table has a primary column:
-                    PrimaryColumn priColumn = table.getPrimaryColumn();
+                    PrimaryKey priColumn = table.getPrimaryKey();
 
                     //this list will contain the columns being added in query form e.g. name VARCHAR(100) UNIQUE,
                     List<StringBuilder> columnTemps = new ArrayList<>();
@@ -262,9 +273,9 @@ public class InitConnection implements Connector {
                         columnTemps.add(nc);
                     }
                     //add constraints:
-                    columns = table.getUniqueColumns();
-                    columns.remove(priColumn);
-                    for (Column col : columns)
+                    List<UniqueColumn> uniqueColumns = table.getUniqueColumns();
+                    uniqueColumns.remove(priColumn);
+                    for (Column col : uniqueColumns)
                         columnTemps.add(new StringBuilder(", UNIQUE (" + col.getName() + ")"));
                     if (priColumn != null)
                         columnTemps.add(new StringBuilder(", PRIMARY KEY (" + priColumn.getName() + ")"));
@@ -355,6 +366,6 @@ public class InitConnection implements Connector {
                     );
                 }
             }
-        }
+        }*/
     }
 }

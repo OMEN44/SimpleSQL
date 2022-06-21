@@ -1,6 +1,8 @@
-package com.github.OMEN44.simpleSQL.entities;
+package com.github.OMEN44.simpleSQL.entities.column;
 
 import com.github.OMEN44.simpleSQL.connectors.Datatype;
+import com.github.OMEN44.simpleSQL.entities.HasTable;
+import com.github.OMEN44.simpleSQL.entities.cell.Cell;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -11,12 +13,6 @@ import java.util.List;
  */
 @SuppressWarnings("unused")
 public interface Column extends HasTable {
-
-    /**
-     * @return Gets a list of all the cells in a column. Returns null if there are no rows.
-     */
-    @Nullable
-    List<Cell> getCells();
 
     /**
      * @return Gets the name of the column.
@@ -53,6 +49,17 @@ public interface Column extends HasTable {
     boolean isPrimary();
 
     /**
+     * @return true if the column is a foreign key
+     */
+    boolean isForeignKey();
+
+    /**
+     * @return Gets a list of all the cells in a column. Returns null if there are no rows.
+     */
+    @Nonnull
+    List<Cell> getCells();
+
+    /**
      * @param cells Cells to be added to the column
      * @return The column with its new cells
      */
@@ -61,8 +68,24 @@ public interface Column extends HasTable {
 
     /**
      * @param cells Cells to be added to the column
-     * @return The column with its new cells
+     */
+    void addCell(Cell... cells);
+
+    /**
+     * @return Converts a column to a primary column
      */
     @Nonnull
-    Column addCell(Cell... cells);
+    PrimaryKey toPrimaryColumn();
+
+    /**
+     * @return Converts a column to a foreign key
+     */
+    @Nonnull
+    ForeignKey toForeignKey();
+
+    /**
+     * @return Converts a column to a unique column
+     */
+    @Nonnull
+    UniqueColumn toUniqueColumn();
 }
