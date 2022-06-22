@@ -40,10 +40,10 @@ public class Main {
         Connector connectorSQL = new InitConnection(mySQL);
         Column col = new ColumnByName(connector, "GenreId", "tracks");
 
-        System.out.println(col.isPrimary());
-        System.out.println(col.isUnique());
-        System.out.println(col.isForeignKey());
-        System.out.println(col.isNotNull());
+        System.out.println("is primary: " + col.isPrimary());
+        System.out.println("is unique: " + col.isUnique());
+        System.out.println("is foreign key: " + col.isForeignKey());
+        System.out.println("is not null: " + col.isNotNull());
         System.out.println("'" + col.getDefaultValue() + "'");
         System.out.println(col.getDatatype());
 

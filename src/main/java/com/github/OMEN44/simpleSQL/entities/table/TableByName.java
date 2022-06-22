@@ -1,12 +1,10 @@
-/*
 package com.github.OMEN44.simpleSQL.entities.table;
 
 import com.github.OMEN44.simpleSQL.connectors.Connector;
 import com.github.OMEN44.simpleSQL.entities.cell.Cell;
 import com.github.OMEN44.simpleSQL.entities.column.Column;
-import com.github.OMEN44.simpleSQL.entities.column.CreateColumn;
+import com.github.OMEN44.simpleSQL.entities.column.ColumnByName;
 import com.github.OMEN44.simpleSQL.entities.row.Row;
-import com.github.OMEN44.simpleSQL.entities.table.Table;
 import com.github.OMEN44.simpleSQL.logger.Logger;
 import com.github.OMEN44.simpleSQL.logger.MissingColumnException;
 
@@ -30,24 +28,12 @@ public class TableByName implements Table {
 
         this.NAME = name;
         //get cells from database
-        List<Column> cols;
         Table table = connector.executeQuery("SELECT * FROM " + name);
-        cols = table.getColumns();
-
+        List<Column> cols = table.getColumns();
         //add column constraints and data
         this.columns = new ArrayList<>();
-        for (Column col : cols) {
-            Column byName = new ColumnByName(connector, col.getName(), name);
-            this.columns.add(new CreateColumn(
-                    col.getName(),
-                    byName.getDatatype(),
-                    byName.getDefaultValue(),
-                    byName.isNotNull(),
-                    byName.isUnique(),
-                    byName.isPrimary()
-            ).setCells(Objects.requireNonNull(byName.getCells()).toArray(new Cell[0])));
-        }
-
+        for (Column col : cols)
+            this.columns.add(new ColumnByName(connector, col.getName(), name));
         if (toggleDebug)
             Logger.debugMode(true, true);
     }
@@ -58,11 +44,13 @@ public class TableByName implements Table {
         return InstanceType.TABLE;
     }
 
+    @Nonnull
     @Override
     public String getName() {
         return this.NAME;
     }
 
+    @Nonnull
     @Override
     public List<Column> getColumns() {
         return new ArrayList<>(this.columns);
@@ -130,4 +118,4 @@ public class TableByName implements Table {
         }
                 return sb.append(hWall).toString();
                 }
-}*/
+}
