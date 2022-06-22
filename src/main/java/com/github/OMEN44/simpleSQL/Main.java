@@ -2,10 +2,12 @@ package com.github.OMEN44.simpleSQL;
 
 import com.github.OMEN44.simpleSQL.connectors.Connector;
 import com.github.OMEN44.simpleSQL.connectors.InitConnection;
+import com.github.OMEN44.simpleSQL.connectors.dbProfiles.Database;
 import com.github.OMEN44.simpleSQL.connectors.dbProfiles.MySQL;
 import com.github.OMEN44.simpleSQL.connectors.dbProfiles.SQLite;
 import com.github.OMEN44.simpleSQL.entities.column.Column;
 import com.github.OMEN44.simpleSQL.entities.column.ColumnByName;
+import com.github.OMEN44.simpleSQL.entities.table.Table;
 import com.github.OMEN44.simpleSQL.logger.Logger;
 import com.github.OMEN44.simpleSQL.logger.MissingColumnException;
 
@@ -38,14 +40,10 @@ public class Main {
 
         //mySQL
         Connector connectorSQL = new InitConnection(mySQL);
-        Column col = new ColumnByName(connector, "GenreId", "tracks");
-
-        System.out.println("is primary: " + col.isPrimary());
-        System.out.println("is unique: " + col.isUnique());
-        System.out.println("is foreign key: " + col.isForeignKey());
-        System.out.println("is not null: " + col.isNotNull());
-        System.out.println("'" + col.getDefaultValue() + "'");
-        System.out.println(col.getDatatype());
+        Database db = connector.getDatabase();
+        for (Table table : db.getTables()) {
+            System.out.println(table);
+        }
 
     }
 }

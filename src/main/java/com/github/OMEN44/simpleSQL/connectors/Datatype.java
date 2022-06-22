@@ -1,5 +1,7 @@
 package com.github.OMEN44.simpleSQL.connectors;
 
+import static com.github.OMEN44.simpleSQL.logger.Logger.debug;
+
 /**
  * @apiNote This is only for common data types more complex data types should be written in string form.
  */
@@ -33,9 +35,14 @@ public enum Datatype {
     public Integer getSize() {return this.size;}
 
     public static Datatype datatypeOf(String value) {
-        if (value.contains("(")) {
-            return Datatype.valueOf(value.substring(0, value.indexOf("(")).toUpperCase());
-        } else return Datatype.valueOf(value.toUpperCase());
+        try {
+            if (value.contains("(")) {
+                return Datatype.valueOf(value.substring(0, value.indexOf("(")).toUpperCase());
+            } else return Datatype.valueOf(value.toUpperCase());
+        } catch (IllegalArgumentException e) {
+            debug("Unknown datatype found: " + e.getMessage().substring(e.getMessage().lastIndexOf(".")));
+            return Datatype.OBJECT;
+        }
     }
 
     public static String toString(Datatype datatype) {

@@ -9,9 +9,9 @@ import com.github.OMEN44.simpleSQL.entities.cell.CreateCell;
 import com.github.OMEN44.simpleSQL.entities.column.Column;
 import com.github.OMEN44.simpleSQL.entities.column.CreateColumn;
 import com.github.OMEN44.simpleSQL.entities.row.Row;
-import com.github.OMEN44.simpleSQL.entities.table.CreateTable;
 import com.github.OMEN44.simpleSQL.entities.table.ResultTable;
 import com.github.OMEN44.simpleSQL.entities.table.Table;
+import com.github.OMEN44.simpleSQL.entities.table.TableByName;
 import com.github.OMEN44.simpleSQL.logger.*;
 
 import java.io.File;
@@ -60,7 +60,12 @@ public class InitConnection implements Connector {
 
     @Override
     public Database getDatabase() throws MissingColumnException {
-        /*List<Table> tables = new ArrayList<>();
+        boolean toggleDebug = false;
+        if (Logger.isDebugMode()) {
+            Logger.debugMode(false, true);
+            toggleDebug = true;
+        }
+        List<Table> tables = new ArrayList<>();
         List<Cell> tableList = new ArrayList<>();
         if (this.connType == Database.DatabaseType.MYSQL) {
             tableList = executeQuery("SHOW TABLES").getColumns().get(0).getCells();
@@ -68,14 +73,14 @@ public class InitConnection implements Connector {
             tableList = executeQuery("SELECT name FROM sqlite_master WHERE type='table' ORDER BY name")
                     .getColumns().get(0).getCells();
         }
-        assert tableList != null;
+        if (toggleDebug)
+            Logger.debugMode(true, true);
         if (tableList.size() == 0)
             debug("No tables found", true);
 
         //get Tables
-        for (Cell cell : tableList) {
+        for (Cell cell : tableList)
             tables.add(new TableByName(this, (String) cell.getData()));
-        }
 
         switch (this.DATABASE.getDatabaseType()) {
             case SQLITE -> {
@@ -91,8 +96,7 @@ public class InitConnection implements Connector {
                 debug("No database connected!", true);
                 return null;
             }
-        }*/
-        return null;
+        }
     }
 
     @Override
@@ -162,12 +166,14 @@ public class InitConnection implements Connector {
             conn = getSQLConnection();
             if (conn != null) {
                 ps = conn.prepareStatement(sql);
+                debug("Query prepared for update");
                 int index = 1;
                 for (Object param : parameters) {
                     ps.setObject(index, param);
                     index++;
                 }
                 ps.executeUpdate();
+                debug("Database updated");
             }
         } catch (SQLException | SimpleSQLException e) {
             e.printStackTrace();
