@@ -13,6 +13,8 @@ import java.util.List;
 public class ForeignKey extends UniqueColumn implements Column {
 
     private List<Table> referencedTables;
+    private String referencedTableName;
+    private String referencedColumnName;
 
     public ForeignKey(String name, Datatype dataType, @Nonnull Object defaultValue, boolean primaryKey, Cell... cells) {
         super(name, dataType, defaultValue, primaryKey, true, cells);
@@ -27,7 +29,26 @@ public class ForeignKey extends UniqueColumn implements Column {
         return referencedTables;
     }
 
-    public void setReferencedTables(Table... referencedTables) {
+    public ForeignKey setReferencedTables(Table... referencedTables) {
         this.referencedTables = Arrays.stream(referencedTables).toList();
+        return this;
+    }
+
+    public String getReferencedTableNames() {
+        return referencedTableName;
+    }
+
+    public ForeignKey setReferencedTableNames(String referencedTableNames) {
+        this.referencedTableName = referencedTableNames;
+        return this;
+    }
+
+    public String getReferencedColumnName() {
+        return referencedColumnName;
+    }
+
+    public ForeignKey setReferencedColumnName(String referencedColumnName) {
+        this.referencedColumnName = referencedColumnName;
+        return this;
     }
 }

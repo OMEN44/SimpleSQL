@@ -84,8 +84,20 @@ public class ResultTable implements Table {
     //iteration controllers
 
     public boolean next() {
-        if (this.colIndexMax  == 0 || this.rowIndexMax == 0) return false;
+        if (this.colIndexMax == 0 || this.rowIndexMax == 0) return false;
         colIndex++;
+        if (this.colIndex == this.colIndexMax) {
+            rowIndex++;
+            if (this.rowIndex == this.rowIndexMax)
+                return false;
+            colIndex = 0;
+        }
+        return true;
+    }
+
+    public boolean next(int i) {
+        if (this.colIndexMax == 0 || this.rowIndexMax == 0) return false;
+        colIndex+=i;
         if (this.colIndex == this.colIndexMax) {
             rowIndex++;
             if (this.rowIndex == this.rowIndexMax)

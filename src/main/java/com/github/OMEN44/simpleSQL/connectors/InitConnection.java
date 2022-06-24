@@ -248,7 +248,7 @@ public class InitConnection implements Connector {
     }
 
     @Override
-    public void writeToDatabase(Entity... entities) throws TableUnassignedException, EntityNotUniqueException, MissingColumnException {
+    public void writeToDatabase(Entity... entities) {
         /*for (Entity entity : entities) {
             System.out.println(entity.getEntityType());
             switch (entity.getEntityType()) {

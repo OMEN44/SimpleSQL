@@ -34,7 +34,7 @@ public interface Database {
      */
     List<Table> getTables();
 
-
+    List<String> getTableNames();
 
     /**
      * @param database Database object being tested.

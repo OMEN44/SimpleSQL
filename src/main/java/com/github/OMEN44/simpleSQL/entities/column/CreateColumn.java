@@ -143,43 +143,6 @@ public class CreateColumn implements Column {
         this.defaultValue = defaultValue;
     }
 
-    @Nonnull
-    @Override
-    public PrimaryKey toPrimaryColumn() {
-        return new PrimaryKey(
-                this.name,
-                this.datatype,
-                this.defaultValue,
-                this.FOREIGN_KEY,
-                this.cells.toArray(new Cell[0])
-        );
-    }
-
-    @Nonnull
-    @Override
-    public ForeignKey toForeignKey() {
-        return new ForeignKey(
-                this.name,
-                this.datatype,
-                this.defaultValue,
-                this.PRIMARY_KEY,
-                this.cells.toArray(new Cell[0])
-        );
-    }
-
-    @Nonnull
-    @Override
-    public UniqueColumn toUniqueColumn() {
-        return new UniqueColumn(
-                this.name,
-                this.datatype,
-                this.defaultValue,
-                this.PRIMARY_KEY,
-                this.FOREIGN_KEY,
-                this.cells.toArray(new Cell[0])
-        );
-    }
-
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();

@@ -26,6 +26,8 @@ public class ColumnByName implements Column {
     private final boolean PRIMARY_KEY;
     private final boolean FOREIGN_KEY;
     private final List<Cell> CELLS;
+    private String referencedColumn;
+    private String referencedTable;
     private Table PARENT_TABLE;
 
     public ColumnByName(Connector connector, String columnName, String tableName) throws MissingColumnException {
@@ -56,22 +58,27 @@ public class ColumnByName implements Column {
         //get constraints
         switch (connector.databaseType()) {
             case MYSQL -> {
-                r = connector.executeQuery("DESCRIBE " + tableName);
-                for (Row row : r.getRows()) {
-                    if (row.getCells().get(0).getData().toString().equals(columnName)) {
-                        datatype = Datatype.datatypeOf(row.getCells().get(1).getData().toString());
-                        notNull = row.getCells().get(2).getData().toString().equals("YES");
-                        defaultValue = row.getCells().get(4).getData();
-                        String key = row.getCells().get(3).getData().toString();
-                        switch (key) {
-                            case "PRI" -> {
-                                primaryKey = true;
-                                isUnique = true;
-                            }
-                            case "MUL" -> foreignKey = true;
-                            case "UNI" -> isUnique = true;
-                        }
-                        break;
+                ResultTable rt = connector.executeQuery("show create table `" + tableName + "`");
+                rt.next(2);
+                for (String s : rt.get().getData().toString().split("\n")) {
+                    if (s.startsWith(columnName, 3)) {
+                        if (s.contains("NOT NULL")) notNull = true;
+                        datatype = Datatype.datatypeOf(
+                                s.substring(s.lastIndexOf("`") + 2, s.indexOf(" ", s.lastIndexOf("`") + 2))
+                        );
+                        if (s.contains("DEFAULT") && s.contains("'"))
+                            defaultValue = s.substring(s.indexOf("'"), s.lastIndexOf("'"));
+                        else defaultValue = null;
+                    }
+                    if (s.startsWith("  PRIMARY KEY") && s.contains(columnName)) {
+                        primaryKey = true;
+                        isUnique = true;
+                    }
+                    if (s.startsWith("  UNIQUE KEY") && s.contains(columnName)) isUnique = true;
+                    if (s.startsWith(columnName, s.indexOf("FOREIGN KEY") + 14)) {
+                        foreignKey = true;
+                        this.referencedColumn = s.substring(s.lastIndexOf("(") + 2, s.lastIndexOf(")") - 1);
+                        this.referencedTable = s.substring(s.indexOf("REFERENCES") + 12, s.lastIndexOf("(") - 2);
                     }
                 }
             }
@@ -95,8 +102,10 @@ public class ColumnByName implements Column {
                                 break;
                             }
                         }
-                        //to get the rest of the constraints use: PRAGMA index_list(table_name); then use
+                        // to get the rest of the constraints use: PRAGMA index_list(table_name); then use
                         // PRAGMA index_info(index_name); to find if the column being searched is the correct one.
+                        // to get foreign key constraints use
+                        // SELECT `table`, `from`, `to` FROM pragma_foreign_key_list('tracks');
                         break;
                     }
                 }
@@ -191,20 +200,14 @@ public class ColumnByName implements Column {
 
     @Nonnull
     @Override
-    public PrimaryKey toPrimaryColumn() {
-        return null;
-    }
-
-    @Nonnull
-    @Override
     public ForeignKey toForeignKey() {
-        return null;
-    }
-
-    @Nonnull
-    @Override
-    public UniqueColumn toUniqueColumn() {
-        return null;
+        return new ForeignKey(
+                this.NAME,
+                this.DATATYPE,
+                this.DEFAULT_VALUE,
+                this.PRIMARY_KEY,
+                this.CELLS.toArray(new Cell[0])
+        ).setReferencedTableNames(this.referencedTable).setReferencedColumnName(this.referencedColumn);
     }
 
     @Override

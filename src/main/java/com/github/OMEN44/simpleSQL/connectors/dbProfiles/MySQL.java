@@ -2,6 +2,7 @@ package com.github.OMEN44.simpleSQL.connectors.dbProfiles;
 
 import com.github.OMEN44.simpleSQL.entities.table.Table;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -78,6 +79,14 @@ public class MySQL implements Database {
     @Override
     public List<Table> getTables() {
         return tables;
+    }
+
+    @Override
+    public List<String> getTableNames() {
+        List<String> names = new ArrayList<>();
+        for (Table table : this.tables)
+            names.add(table.getName());
+        return names;
     }
 
     @Override

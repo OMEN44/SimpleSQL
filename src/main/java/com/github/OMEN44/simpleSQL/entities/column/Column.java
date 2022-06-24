@@ -74,18 +74,46 @@ public interface Column extends HasTable {
     /**
      * @return Converts a column to a primary column
      */
+    @SuppressWarnings("all")
     @Nonnull
-    PrimaryKey toPrimaryColumn();
+    default PrimaryKey toPrimaryColumn() {
+        return new PrimaryKey(
+                getName(),
+                getDatatype(),
+                getDefaultValue(),
+                isForeignKey(),
+                getCells().toArray(new Cell[0])
+        );
+    }
 
     /**
      * @return Converts a column to a foreign key
      */
+    @SuppressWarnings("all")
     @Nonnull
-    ForeignKey toForeignKey();
+    default ForeignKey toForeignKey() {
+        return new ForeignKey(
+                getName(),
+                getDatatype(),
+                getDefaultValue(),
+                isPrimary(),
+                getCells().toArray(new Cell[0])
+        );
+    }
 
     /**
      * @return Converts a column to a unique column
      */
+    @SuppressWarnings("all")
     @Nonnull
-    UniqueColumn toUniqueColumn();
+    default UniqueColumn toUniqueColumn() {
+        return new UniqueColumn(
+                getName(),
+                getDatatype(),
+                getDefaultValue(),
+                isPrimary(),
+                isForeignKey(),
+                getCells().toArray(new Cell[0])
+        );
+    }
 }
