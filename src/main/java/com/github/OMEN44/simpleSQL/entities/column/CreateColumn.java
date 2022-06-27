@@ -1,7 +1,6 @@
 package com.github.OMEN44.simpleSQL.entities.column;
 
 import com.github.OMEN44.simpleSQL.connectors.Datatype;
-import com.github.OMEN44.simpleSQL.entities.Entity;
 import com.github.OMEN44.simpleSQL.entities.cell.Cell;
 import com.github.OMEN44.simpleSQL.entities.table.Table;
 import com.github.OMEN44.simpleSQL.logger.TableUnassignedException;
@@ -10,10 +9,9 @@ import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
 
 @SuppressWarnings("unused")
-public class CreateColumn implements Column {
+public class CreateColumn extends Column {
     private final boolean IS_UNIQUE;
     private final boolean PRIMARY_KEY;
     private final boolean FOREIGN_KEY;
@@ -64,11 +62,9 @@ public class CreateColumn implements Column {
         return parentTable;
     }
 
-    @Nonnull
     @Override
-    public Entity setParentTable(Table table) {
+    public void setParentTable(Table table) {
         this.parentTable = table;
-        return this;
     }
 
     @Nonnull
@@ -141,20 +137,5 @@ public class CreateColumn implements Column {
 
     public void setDefaultValue(Object defaultValue) {
         this.defaultValue = defaultValue;
-    }
-
-    @Override
-    public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append(this.name)
-                .append("\n");
-        sb.append("=".repeat(this.getName().length()))
-                .append("\n");
-        for (int i = 0; i < Objects.requireNonNull(getCells()).size(); i++) {
-            sb.append(getCells().get(i).getData())
-                    .append("\n");
-        }
-        sb.append("=".repeat(this.getName().length()));
-        return sb.toString();
     }
 }

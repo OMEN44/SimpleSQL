@@ -2,9 +2,8 @@ package com.github.OMEN44.simpleSQL.entities.cell;
 
 import com.github.OMEN44.simpleSQL.connectors.Connector;
 import com.github.OMEN44.simpleSQL.entities.column.Column;
-import com.github.OMEN44.simpleSQL.entities.row.CreateRow;
 import com.github.OMEN44.simpleSQL.entities.row.Row;
-import com.github.OMEN44.simpleSQL.entities.table.Table;
+import com.github.OMEN44.simpleSQL.entities.table.ResultTable;
 import com.github.OMEN44.simpleSQL.logger.EntityNotUniqueException;
 import com.github.OMEN44.simpleSQL.logger.TableUnassignedException;
 
@@ -34,7 +33,7 @@ public interface Cell extends BasicCell {
             throw new TableUnassignedException("This object requires a table to preform this action");
         if (getRowIdentifier() == null)
             throw new EntityNotUniqueException("This cell needs a unique identifier");
-        Table table = connector.executeQuery(
+        ResultTable table = connector.executeQuery(
                 "SELECT * FROM " + getParentTable().getName() + " WHERE " +
                         getRowIdentifier().getColumn().getName() + "=?",
                 getRowIdentifier().getData()
@@ -42,7 +41,7 @@ public interface Cell extends BasicCell {
         List<Cell> cells = new ArrayList<>();
         for (Column c : table.getColumns())
             cells.add(Objects.requireNonNull(c.getCells()).get(0));
-        return new CreateRow(cells.toArray(new Cell[0]));
+        return new Row(cells.toArray(new Cell[0]));
     }
 
     @Nonnull

@@ -1,19 +1,15 @@
 package com.github.OMEN44.simpleSQL.entities.cell;
 
 import com.github.OMEN44.simpleSQL.connectors.Connector;
-import com.github.OMEN44.simpleSQL.entities.*;
 import com.github.OMEN44.simpleSQL.entities.column.Column;
-import com.github.OMEN44.simpleSQL.entities.row.Row;
+import com.github.OMEN44.simpleSQL.entities.table.ResultTable;
 import com.github.OMEN44.simpleSQL.entities.table.Table;
-import com.github.OMEN44.simpleSQL.entities.row.CreateRow;
 import com.github.OMEN44.simpleSQL.logger.EntityNotUniqueException;
 import com.github.OMEN44.simpleSQL.logger.TableUnassignedException;
 import com.github.OMEN44.simpleSQL.connectors.Datatype;
 
 import javax.annotation.Nonnull;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import javax.annotation.Nullable;
 
 @SuppressWarnings("unused")
 public class CreateCell extends BasicCellImpl implements Cell {
@@ -57,11 +53,9 @@ public class CreateCell extends BasicCellImpl implements Cell {
         return parentTable;
     }
 
-    @Nonnull
     @Override
-    public Entity setParentTable(Table table) {
+    public void setParentTable(Table table) {
         this.parentTable = table;
-        return this;
     }
 
     @Nonnull
@@ -90,7 +84,7 @@ public class CreateCell extends BasicCellImpl implements Cell {
     public Column getFullColumn(Connector connector) throws TableUnassignedException {
         if (this.parentTable == null)
             throw new TableUnassignedException("This object requires a table to preform this action");
-        Table table = connector.executeQuery(
+        ResultTable table = connector.executeQuery(
                 "SELECT " + this.COLUMN.getName() + " FROM " + this.parentTable.getName()
         );
         return table.getColumns().get(0);
@@ -106,7 +100,7 @@ public class CreateCell extends BasicCellImpl implements Cell {
         return IS_PRIMARY;
     }
 
-    @Nonnull
+    @Nullable
     @Override
     public Object getData() {
         return DATA;

@@ -6,7 +6,7 @@ import com.github.OMEN44.simpleSQL.entities.cell.Cell;
 import javax.annotation.Nonnull;
 
 @SuppressWarnings("unused")
-public class UniqueColumn extends CreateColumn implements Column {
+public class UniqueColumn extends CreateColumn {
 
     public UniqueColumn(String name, Datatype dataType, @Nonnull Object defaultValue, boolean primaryKey, boolean foreignKey, Cell... cells) {
         super(name, dataType, defaultValue, true, true, primaryKey, foreignKey, cells);

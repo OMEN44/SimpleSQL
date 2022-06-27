@@ -1,13 +1,11 @@
 package com.github.OMEN44.simpleSQL;
 
 import com.github.OMEN44.simpleSQL.connectors.Connector;
-import com.github.OMEN44.simpleSQL.connectors.InitConnection;
 import com.github.OMEN44.simpleSQL.connectors.dbProfiles.MySQL;
 import com.github.OMEN44.simpleSQL.connectors.dbProfiles.SQLite;
 import com.github.OMEN44.simpleSQL.entities.column.ColumnByName;
 import com.github.OMEN44.simpleSQL.entities.column.ForeignKey;
 import com.github.OMEN44.simpleSQL.entities.table.ResultTable;
-import com.github.OMEN44.simpleSQL.entities.table.Table;
 import com.github.OMEN44.simpleSQL.logger.MissingColumnException;
 
 public class Main {
@@ -25,21 +23,20 @@ public class Main {
                 ""
         );
 
-        Connector connector = new InitConnection(mySQL);
+        Connector connector = new Connector().init(mySQL);
         ForeignKey column = new ColumnByName(connector, "client_id", "payments").toForeignKey();
 
-        System.out.println(column + "\n");
-        System.out.println("name: " + column.getName());
-        System.out.println("ref location: " + column.getReferencedTableNames() + "." + column.getReferencedColumnName());
+        System.out.println(column);
+        System.out.println("ref location: " + column.getReferencedTableNames() + "." + column.getReferencedColumnName() + "\n");
 
         for (String table : connector.getDatabase().getTableNames()) {
             ResultTable rt = connector.executeQuery("show create table " + table);
             rt.next(2);
-            System.out.println(rt.get().getData());
+            System.out.println(rt);
             System.out.println();
         }
 
-        /*Connector conn = new InitConnection(sqLite);
+        /*Connector conn = new Connector(sqLite);
         Table table = new TableByName(conn, "customers");
         for (Column col : table.getColumns()) {
             System.out.println(col.getName());

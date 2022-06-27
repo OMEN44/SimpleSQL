@@ -41,6 +41,4 @@ public interface Entity {
             throw new SimpleSQLException("Entity input is not recognised.");
         }
     }
-
-
 }

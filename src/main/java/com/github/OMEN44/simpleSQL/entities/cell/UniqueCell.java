@@ -4,6 +4,7 @@ import com.github.OMEN44.simpleSQL.connectors.Connector;
 import com.github.OMEN44.simpleSQL.connectors.Datatype;
 import com.github.OMEN44.simpleSQL.entities.column.Column;
 import com.github.OMEN44.simpleSQL.entities.column.CreateColumn;
+import com.github.OMEN44.simpleSQL.entities.table.ResultTable;
 import com.github.OMEN44.simpleSQL.entities.table.Table;
 import com.github.OMEN44.simpleSQL.logger.EntityNotUniqueException;
 import com.github.OMEN44.simpleSQL.logger.TableUnassignedException;
@@ -59,7 +60,7 @@ public class UniqueCell extends CreateCell implements Cell {
     public Column getFullColumn(Connector connector) throws TableUnassignedException {
         if (this.parentTable == null)
             throw new TableUnassignedException("This object requires a table to preform this action");
-        Table table = connector.executeQuery(
+        ResultTable table = connector.executeQuery(
                 "SELECT " + this.column.getName() + " FROM " + this.parentTable.getName()
         );
         return table.getColumns().get(0);
@@ -75,7 +76,7 @@ public class UniqueCell extends CreateCell implements Cell {
         return this.primary;
     }
 
-    @Nonnull
+    @Nullable
     @Override
     public Object getData() {
         return this.data;

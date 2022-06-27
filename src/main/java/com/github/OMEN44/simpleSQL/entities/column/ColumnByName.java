@@ -2,7 +2,6 @@ package com.github.OMEN44.simpleSQL.entities.column;
 
 import com.github.OMEN44.simpleSQL.connectors.Connector;
 import com.github.OMEN44.simpleSQL.connectors.Datatype;
-import com.github.OMEN44.simpleSQL.entities.Entity;
 import com.github.OMEN44.simpleSQL.entities.cell.Cell;
 import com.github.OMEN44.simpleSQL.entities.row.Row;
 import com.github.OMEN44.simpleSQL.entities.table.ResultTable;
@@ -14,10 +13,9 @@ import com.github.OMEN44.simpleSQL.logger.TableUnassignedException;
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 @SuppressWarnings("unused")
-public class ColumnByName implements Column {
+public class ColumnByName extends Column {
     private final String NAME;
     private final Datatype DATATYPE;
     private final Object DEFAULT_VALUE;
@@ -136,11 +134,9 @@ public class ColumnByName implements Column {
         return PARENT_TABLE;
     }
 
-    @Nonnull
     @Override
-    public Entity setParentTable(Table table) {
+    public void setParentTable(Table table) {
         Logger.error("Cannot set the table of ColumnByName object.");
-        return this;
     }
 
     @Nonnull
@@ -208,20 +204,5 @@ public class ColumnByName implements Column {
                 this.PRIMARY_KEY,
                 this.CELLS.toArray(new Cell[0])
         ).setReferencedTableNames(this.referencedTable).setReferencedColumnName(this.referencedColumn);
-    }
-
-    @Override
-    public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append(this.NAME)
-                .append("\n");
-        sb.append("=".repeat(this.getName().length()))
-                .append("\n");
-        for (int i = 0; i < Objects.requireNonNull(getCells()).size(); i++) {
-            sb.append(getCells().get(i).getData())
-                    .append("\n");
-        }
-        sb.append("=".repeat(this.getName().length()));
-        return sb.toString();
     }
 }

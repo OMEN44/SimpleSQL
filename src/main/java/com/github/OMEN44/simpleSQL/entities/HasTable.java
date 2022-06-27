@@ -23,8 +23,6 @@ public interface HasTable extends Entity {
 
     /**
      * @param table {@link Table} that is being set.
-     * @return The entity that the table is being set for.
      */
-    @Nonnull
-    Entity setParentTable(Table table);
+    void setParentTable(Table table);
 }

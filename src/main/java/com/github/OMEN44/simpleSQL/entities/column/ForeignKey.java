@@ -10,7 +10,7 @@ import java.util.Arrays;
 import java.util.List;
 
 @SuppressWarnings("unused")
-public class ForeignKey extends UniqueColumn implements Column {
+public class ForeignKey extends UniqueColumn {
 
     private List<Table> referencedTables;
     private String referencedTableName;

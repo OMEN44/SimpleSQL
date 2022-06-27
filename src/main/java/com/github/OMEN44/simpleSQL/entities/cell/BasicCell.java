@@ -4,6 +4,7 @@ import com.github.OMEN44.simpleSQL.connectors.Datatype;
 import com.github.OMEN44.simpleSQL.entities.HasTable;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * BasicCell is the base for most of this library. <br>
@@ -16,7 +17,7 @@ public interface BasicCell extends HasTable {
     /**
      * @return Returns the data contained by this cell as an object.
      */
-    @Nonnull
+    @Nullable
     Object getData();
 
     /**

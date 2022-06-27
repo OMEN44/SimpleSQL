@@ -8,10 +8,9 @@ import com.github.OMEN44.simpleSQL.logger.Logger;
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 @SuppressWarnings("unused")
-public class ResultTable implements Table {
+public class ResultTable extends Table {
     private final String QUERY;
     private final List<Column> COLUMNS;
     private final int colIndexMax;
@@ -152,63 +151,5 @@ public class ResultTable implements Table {
     @Override
     public void setColumns(Column... columns) {
         Logger.error("This table instance cannot be updated. No columns were added to result set.");
-    }
-
-    @Override
-    public String toString() {
-        StringBuilder sb = new StringBuilder("Result Table: \n");
-        List<Row> rows = getRows();
-        //get the biggest sizes:
-        List<Integer> colWidth = new ArrayList<>();
-        for (Column col : getColumns()) {
-            colWidth.add(col.getName().length());
-            for (Cell cell : Objects.requireNonNull(col.getCells())) {
-                int dataLength;
-                if (cell.getData() == null)
-                    dataLength = 4;
-                else
-                    dataLength = cell.getData().toString().length();
-                if (colWidth.get(getColumns().indexOf(col)) < dataLength) {
-                    colWidth.set(getColumns().indexOf(col), cell.getData().toString().length());
-                }
-            }
-        }
-        //find full width
-        int width = colWidth.size() * 2;
-        for (Integer i : colWidth) {
-            width = width + i;
-        }
-        //create table
-        //get horizontal wall
-        StringBuilder hWall = new StringBuilder();
-        for (int i = 0; i < colWidth.size(); i++) {
-            String name = getColumns().get(i).getName();
-            hWall.append("|").append("-".repeat(colWidth.get(i) + 1));
-        }
-        sb.append(hWall.append("|\n"));
-
-        //makes header
-        for (int i = 0; i < colWidth.size(); i++) {
-            String name = getColumns().get(i).getName();
-            sb.append("|").append(name).append(" ".repeat(colWidth.get(i) - name.length() + 1));
-        }
-        sb.append("|\n").append(hWall);
-
-        for (Row row : getRows()) {
-            int i = 0;
-            StringBuilder line = new StringBuilder();
-            for (Cell cell : row.getCells()) {
-                Object data;
-                if (cell.getData() == null)
-                    data = "NULL";
-                else
-                    data = cell.getData();
-                line.append("|").append(data)
-                        .append(" ".repeat(colWidth.get(i) - data.toString().length() + 1));
-                i++;
-            }
-            sb.append(line).append("|\n");
-        }
-        return sb.append(hWall).toString();
     }
 }

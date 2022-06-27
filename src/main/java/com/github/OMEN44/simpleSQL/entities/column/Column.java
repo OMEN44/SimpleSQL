@@ -12,71 +12,71 @@ import java.util.List;
  * @apiNote This object mainly contains a list of cells and similarly to cells also contains uniqueness constraints
  */
 @SuppressWarnings("unused")
-public interface Column extends HasTable {
+public abstract class Column implements HasTable {
 
     /**
      * @return Gets the name of the column.
      */
     @Nonnull
-    String getName();
+    public abstract String getName();
 
     /**
      * @return Gets the {@link Datatype} of the row.
      */
     @Nonnull
-    Datatype getDatatype();
+    public abstract Datatype getDatatype();
 
     /**
      * @return True if the column defaults to null.
      */
-    boolean isNotNull();
+    public abstract boolean isNotNull();
 
     /**
      * @return Gets the default value of the column. If the column is null this will always be null.
      */
     @Nullable
-    Object getDefaultValue();
+    public abstract Object getDefaultValue();
 
     /**
      * @return If true the column is unique. There can be multiple unique columns in a table, this also includes the
      * primary column.
      */
-    boolean isUnique();
+    public abstract boolean isUnique();
 
     /**
      * @return There can only be one primary column.
      */
-    boolean isPrimary();
+    public abstract boolean isPrimary();
 
     /**
      * @return true if the column is a foreign key
      */
-    boolean isForeignKey();
+    public abstract boolean isForeignKey();
 
     /**
      * @return Gets a list of all the cells in a column. Returns null if there are no rows.
      */
     @Nonnull
-    List<Cell> getCells();
+    public abstract List<Cell> getCells();
 
     /**
      * @param cells Cells to be added to the column
      * @return The column with its new cells
      */
     @Nonnull
-    Column setCells(Cell... cells);
+    public abstract Column setCells(Cell... cells);
 
     /**
      * @param cells Cells to be added to the column
      */
-    void addCell(Cell... cells);
+    public abstract void addCell(Cell... cells);
 
     /**
      * @return Converts a column to a primary column
      */
     @SuppressWarnings("all")
     @Nonnull
-    default PrimaryKey toPrimaryColumn() {
+    public PrimaryKey toPrimaryColumn() {
         return new PrimaryKey(
                 getName(),
                 getDatatype(),
@@ -91,7 +91,7 @@ public interface Column extends HasTable {
      */
     @SuppressWarnings("all")
     @Nonnull
-    default ForeignKey toForeignKey() {
+    public ForeignKey toForeignKey() {
         return new ForeignKey(
                 getName(),
                 getDatatype(),
@@ -106,7 +106,7 @@ public interface Column extends HasTable {
      */
     @SuppressWarnings("all")
     @Nonnull
-    default UniqueColumn toUniqueColumn() {
+    public UniqueColumn toUniqueColumn() {
         return new UniqueColumn(
                 getName(),
                 getDatatype(),
@@ -115,5 +115,20 @@ public interface Column extends HasTable {
                 isForeignKey(),
                 getCells().toArray(new Cell[0])
         );
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append(getName())
+                .append("\n");
+        sb.append("=".repeat(this.getName().length()))
+                .append("\n");
+        for (int i = 0; i < getCells().size(); i++) {
+            sb.append(getCells().get(i).getData())
+                    .append("\n");
+        }
+        sb.append("=".repeat(this.getName().length()));
+        return sb.toString();
     }
 }
