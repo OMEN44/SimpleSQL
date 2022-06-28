@@ -1,5 +1,6 @@
 package com.github.OMEN44.simpleSQL.entities.column;
 
+import com.github.OMEN44.simpleSQL.connectors.Connector;
 import com.github.OMEN44.simpleSQL.connectors.Datatype;
 import com.github.OMEN44.simpleSQL.entities.HasTable;
 import com.github.OMEN44.simpleSQL.entities.cell.Cell;
@@ -130,5 +131,10 @@ public abstract class Column implements HasTable {
         }
         sb.append("=".repeat(this.getName().length()));
         return sb.toString();
+    }
+
+    @Override
+    public void writeToDatabase(Connector connector) {
+
     }
 }

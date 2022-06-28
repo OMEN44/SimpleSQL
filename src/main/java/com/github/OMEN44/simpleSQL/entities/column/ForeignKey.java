@@ -15,6 +15,8 @@ public class ForeignKey extends UniqueColumn {
     private List<Table> referencedTables;
     private String referencedTableName;
     private String referencedColumnName;
+    private String onDelete;
+    private String onUpdate;
 
     public ForeignKey(String name, Datatype dataType, @Nonnull Object defaultValue, boolean primaryKey, Cell... cells) {
         super(name, dataType, defaultValue, primaryKey, true, cells);

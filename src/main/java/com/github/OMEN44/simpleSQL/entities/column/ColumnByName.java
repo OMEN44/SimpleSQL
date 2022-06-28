@@ -65,7 +65,7 @@ public class ColumnByName extends Column {
                                 s.substring(s.lastIndexOf("`") + 2, s.indexOf(" ", s.lastIndexOf("`") + 2))
                         );
                         if (s.contains("DEFAULT") && s.contains("'"))
-                            defaultValue = s.substring(s.indexOf("'"), s.lastIndexOf("'"));
+                            defaultValue = s.substring(s.indexOf("'") + 1, s.lastIndexOf("'"));
                         else defaultValue = null;
                     }
                     if (s.startsWith("  PRIMARY KEY") && s.contains(columnName)) {
@@ -136,7 +136,7 @@ public class ColumnByName extends Column {
 
     @Override
     public void setParentTable(Table table) {
-        Logger.error("Cannot set the table of ColumnByName object.");
+        this.PARENT_TABLE = table;
     }
 
     @Nonnull

@@ -39,6 +39,10 @@ public class CreateCell extends BasicCellImpl implements Cell {
         this.IS_PRIMARY = false;
     }
 
+    public void e() {
+        System.out.println("e");
+    }
+
     @Nonnull
     @Override
     public InstanceType getEntityType() {

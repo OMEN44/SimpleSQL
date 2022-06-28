@@ -1,6 +1,9 @@
 package com.github.OMEN44.simpleSQL.entities.table;
 
+import com.github.OMEN44.simpleSQL.connectors.Connector;
+import com.github.OMEN44.simpleSQL.connectors.Datatype;
 import com.github.OMEN44.simpleSQL.entities.column.Column;
+import com.github.OMEN44.simpleSQL.entities.column.ForeignKey;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;

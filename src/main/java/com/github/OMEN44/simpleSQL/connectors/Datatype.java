@@ -19,6 +19,7 @@ public enum Datatype {
     DOUBLE,
     DATE,
     DECIMAL,
+    TINYINT,
     /**
      * {@code Datatype.OBJECT} is used as a placeholder for result sets and may result in errors if used to write to a
      * database
@@ -55,6 +56,7 @@ public enum Datatype {
             case DOUBLE -> "DOUBLE";
             case DATE -> "DATE";
             case DECIMAL -> "DECIMAL";
+            case TINYINT -> "TINYINT";
             case OBJECT -> null;
         };
     }

@@ -1,11 +1,13 @@
 package com.github.OMEN44.simpleSQL.entities.row;
 
+import com.github.OMEN44.simpleSQL.connectors.Connector;
 import com.github.OMEN44.simpleSQL.entities.HasTable;
 import com.github.OMEN44.simpleSQL.entities.cell.Cell;
 import com.github.OMEN44.simpleSQL.entities.table.Table;
 import com.github.OMEN44.simpleSQL.logger.TableUnassignedException;
 
 import javax.annotation.Nonnull;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
@@ -46,6 +48,13 @@ public class Row implements HasTable {
         return this.cells;
     }
 
+    /**
+     * @return returns the length of the row
+     */
+    public int length() {
+        return this.cells.size();
+    }
+
     @Override
     public String toString() {
         StringBuilder top = new StringBuilder("|");
@@ -69,5 +78,10 @@ public class Row implements HasTable {
             bottom.append(" |");
         }
         return top + "\n" + middle + "\n" + bottom + "\n";
+    }
+
+    @Override
+    public void writeToDatabase(Connector connector) {
+
     }
 }
