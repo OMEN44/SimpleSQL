@@ -1,10 +1,13 @@
 package com.github.OMEN44.simpleSQL.entities.table;
 
+import com.github.OMEN44.simpleSQL.connectors.Connector;
+import com.github.OMEN44.simpleSQL.connectors.Datatype;
 import com.github.OMEN44.simpleSQL.entities.Entity;
 import com.github.OMEN44.simpleSQL.entities.column.*;
 import com.github.OMEN44.simpleSQL.entities.row.Row;
 import com.github.OMEN44.simpleSQL.entities.cell.Cell;
 import com.github.OMEN44.simpleSQL.logger.Logger;
+import com.github.OMEN44.simpleSQL.logger.TableUnassignedException;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -25,6 +28,19 @@ public abstract class Table implements Entity {
      */
     @Nonnull
     public abstract List<Column> getColumns();
+
+    /**
+     * @param name Name of target column
+     * @return returns the column with the specified name if it is found else it will return null
+     */
+    @Nullable
+    public Column getColumnByName(String name) {
+        for (Column col : getColumns()) {
+            if (col.getName().equals(name))
+                return col;
+        }
+        return null;
+    }
 
     /**
      * @return Returns all the candidate keys, this means all the columns that can be used to uniquely identify a row.
@@ -149,14 +165,26 @@ public abstract class Table implements Entity {
      */
     @Nonnull
     public Table setRows(Row... rows) {
+        for (Row row : rows) {
+            for (int i = 0; i < row.length(); i++) {
+                Column target = getColumnByName(row.getCells().get(i).getColumn().getName());
+                if (target != null) {
+                    target.addCell(row.getCells().get(i));
+                }
+            }
+        }
+        for (Column col : getColumns()) {
+            System.out.println(col);
+        }
+        /*
+
         List<Column> columns = new ArrayList<>();
-        int colNum = rows[0].getCells().size();
         List<List<Cell>> colsOfCells = new ArrayList<>();
         //organise rows into columns in a list
-        for (int i = 0; i < colNum; i++) {
+        for (int j = 0; j < rows[0].length(); j++) {
             List<Cell> cells = new ArrayList<>();
             for (Row row : rows) {
-                cells.add(row.getCells().get(i));
+                cells.add(row.getCells().get(j));
             }
             colsOfCells.add(cells);
         }
@@ -176,7 +204,7 @@ public abstract class Table implements Entity {
         for (int i = 0; i < columns.size(); i++) {
             columns.set(i, columns.get(i).setCells(colsOfCells.get(i).toArray(new Cell[0])));
         }
-        setColumns(columns.toArray(new Column[0]));
+        setColumns(columns.toArray(new Column[0]));*/
         return this;
     }
 
@@ -236,5 +264,48 @@ public abstract class Table implements Entity {
             sb.append(line).append("|\n");
         }
         return sb.append(hWall).toString();
+    }
+
+    @Override
+    public void writeToDatabase(Connector connector) {
+        StringBuilder columns = new StringBuilder();
+        for (Column col : getColumns()) {
+            StringBuilder sb = new StringBuilder();
+            sb.append(", \n  ").append("`").append(col.getName()).append("` ")
+                    .append(Datatype.toString(col.getDatatype()));
+            if (col.isNotNull())
+                sb.append(" NOT NULL");
+            if (col.getDefaultValue() != null)
+                sb.append(" DEFAULT '").append(col.getDefaultValue()).append("'");
+            if (col.isUnique())
+                sb.append(" UNIQUE");
+            if (col.isPrimary())
+                sb.append(",\n  PRIMARY KEY (`").append(col.getName()).append("`)");
+            if (col.isForeignKey()) {
+                ForeignKey fk = col.toForeignKey();
+                sb.append(",\n  CONSTRAINT `FK_").append(getName()).append("_").append(col.getName())
+                        .append("` FOREIGN KEY (`").append(col.getName()).append("`) REFERENCES `")
+                        .append(fk.getReferencedTableNames()).append("` (`").append(fk.getReferencedColumnName())
+                        .append("`)");
+            }
+            columns.append(sb);
+        }
+        connector.executeUpdate("CREATE TABLE IF NOT EXISTS `" + getName() + "` (" +
+                columns.substring(2) + "\n)");
+        for (Row row : getRows()) {
+            row.setParentTable(this);
+            StringBuilder sb = new StringBuilder("INSERT INTO `" + getName() + "` (");
+            List<String> s = new ArrayList<>();
+            for (Cell cell : row.getCells()) {
+                if (getColumnByName(cell.getColumn().getName()) != null) {
+                    sb.append(cell.getColumn().getName()).append(", ");
+                    if (cell.getData() == null) s.add(null);
+                    else s.add(cell.getData().toString());
+                }
+            }
+            sb.replace(sb.length() - 2, sb.length(), ") VALUES (?")
+                    .append(", ?".repeat(Math.max(0, s.size() - 1))).append(")");
+            connector.executeUpdate(sb.toString(), s.toArray(new Object[0]));
+        }
     }
 }

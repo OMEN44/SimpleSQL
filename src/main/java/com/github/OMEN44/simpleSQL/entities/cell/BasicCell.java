@@ -1,5 +1,6 @@
 package com.github.OMEN44.simpleSQL.entities.cell;
 
+import com.github.OMEN44.simpleSQL.connectors.Connector;
 import com.github.OMEN44.simpleSQL.connectors.Datatype;
 import com.github.OMEN44.simpleSQL.entities.HasTable;
 
@@ -25,4 +26,9 @@ public interface BasicCell extends HasTable {
      */
     @Nonnull
     Datatype getDatatype();
+
+    @Override
+    default void writeToDatabase(Connector connector) {
+
+    }
 }

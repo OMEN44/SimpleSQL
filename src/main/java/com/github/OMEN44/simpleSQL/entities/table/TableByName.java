@@ -25,7 +25,7 @@ public class TableByName extends Table {
 
         this.NAME = name;
         //get cells from database
-        Table table = connector.executeQuery("SELECT * FROM " + name);
+        ResultTable table = connector.executeQuery("SELECT * FROM " + name);
         List<Column> cols = table.getColumns();
         //add column constraints and data
         this.columns = new ArrayList<>();

@@ -1,7 +1,9 @@
 package com.github.OMEN44.simpleSQL.entities;
 
+import com.github.OMEN44.simpleSQL.connectors.Connector;
 import com.github.OMEN44.simpleSQL.entities.cell.BasicCell;
 import com.github.OMEN44.simpleSQL.logger.SimpleSQLException;
+import com.github.OMEN44.simpleSQL.logger.TableUnassignedException;
 
 import javax.annotation.Nonnull;
 
@@ -41,4 +43,6 @@ public interface Entity {
             throw new SimpleSQLException("Entity input is not recognised.");
         }
     }
+
+    void writeToDatabase(Connector connector) throws TableUnassignedException;
 }

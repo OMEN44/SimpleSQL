@@ -66,4 +66,9 @@ public interface Cell extends BasicCell {
      * @return {@code true} if the cell is in a primary column and {@code false} otherwise.
      */
     boolean isPrimary();
+
+    @Override
+    default void writeToDatabase(Connector connector) {
+
+    }
 }

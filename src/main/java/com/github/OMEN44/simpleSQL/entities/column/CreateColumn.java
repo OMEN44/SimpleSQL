@@ -138,4 +138,8 @@ public class CreateColumn extends Column {
     public void setDefaultValue(Object defaultValue) {
         this.defaultValue = defaultValue;
     }
+
+    public void writeToDatabase() {
+
+    }
 }

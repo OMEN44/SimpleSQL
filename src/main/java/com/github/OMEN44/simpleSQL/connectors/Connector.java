@@ -3,16 +3,13 @@ package com.github.OMEN44.simpleSQL.connectors;
 import com.github.OMEN44.simpleSQL.connectors.dbProfiles.Database;
 import com.github.OMEN44.simpleSQL.connectors.dbProfiles.MySQL;
 import com.github.OMEN44.simpleSQL.connectors.dbProfiles.SQLite;
-import com.github.OMEN44.simpleSQL.entities.Entity;
 import com.github.OMEN44.simpleSQL.entities.cell.Cell;
 import com.github.OMEN44.simpleSQL.entities.cell.CreateCell;
 import com.github.OMEN44.simpleSQL.entities.column.Column;
 import com.github.OMEN44.simpleSQL.entities.column.CreateColumn;
-import com.github.OMEN44.simpleSQL.entities.column.PrimaryKey;
-import com.github.OMEN44.simpleSQL.entities.column.UniqueColumn;
 import com.github.OMEN44.simpleSQL.entities.row.Row;
-import com.github.OMEN44.simpleSQL.entities.table.ResultTable;
 import com.github.OMEN44.simpleSQL.entities.table.Table;
+import com.github.OMEN44.simpleSQL.entities.table.ResultTable;
 import com.github.OMEN44.simpleSQL.entities.table.TableByName;
 import com.github.OMEN44.simpleSQL.logger.*;
 
@@ -294,7 +291,7 @@ public class Connector {
         );
     }
 
-    public void writeToDatabase(Entity... entities) throws TableUnassignedException, MissingColumnException, EntityNotUniqueException {
+    /*public void writeToDatabase(Entity... entities) throws TableUnassignedException, MissingColumnException, EntityNotUniqueException {
         for (Entity entity : entities) {
             System.out.println(entity.getEntityType());
             switch (entity.getEntityType()) {
@@ -419,7 +416,7 @@ public class Connector {
                 }
             }
         }
-    }
+    }*/
 
     enum Status {
         NOT_READY,
