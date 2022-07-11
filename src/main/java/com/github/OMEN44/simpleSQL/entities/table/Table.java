@@ -3,15 +3,19 @@ package com.github.OMEN44.simpleSQL.entities.table;
 import com.github.OMEN44.simpleSQL.connectors.Connector;
 import com.github.OMEN44.simpleSQL.connectors.Datatype;
 import com.github.OMEN44.simpleSQL.entities.Entity;
-import com.github.OMEN44.simpleSQL.entities.column.*;
-import com.github.OMEN44.simpleSQL.entities.row.Row;
 import com.github.OMEN44.simpleSQL.entities.cell.Cell;
+import com.github.OMEN44.simpleSQL.entities.column.Column;
+import com.github.OMEN44.simpleSQL.entities.column.ForeignKey;
+import com.github.OMEN44.simpleSQL.entities.column.PrimaryKey;
+import com.github.OMEN44.simpleSQL.entities.column.UniqueColumn;
+import com.github.OMEN44.simpleSQL.entities.row.Row;
 import com.github.OMEN44.simpleSQL.logger.Logger;
-import com.github.OMEN44.simpleSQL.logger.TableUnassignedException;
+import com.github.OMEN44.simpleSQL.logger.MissingColumnException;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
@@ -268,44 +272,98 @@ public abstract class Table implements Entity {
 
     @Override
     public void writeToDatabase(Connector connector) {
-        StringBuilder columns = new StringBuilder();
-        for (Column col : getColumns()) {
-            StringBuilder sb = new StringBuilder();
-            sb.append(", \n  ").append("`").append(col.getName()).append("` ")
-                    .append(Datatype.toString(col.getDatatype()));
-            if (col.isNotNull())
-                sb.append(" NOT NULL");
-            if (col.getDefaultValue() != null)
-                sb.append(" DEFAULT '").append(col.getDefaultValue()).append("'");
-            if (col.isUnique())
-                sb.append(" UNIQUE");
-            if (col.isPrimary())
-                sb.append(",\n  PRIMARY KEY (`").append(col.getName()).append("`)");
-            if (col.isForeignKey()) {
-                ForeignKey fk = col.toForeignKey();
-                sb.append(",\n  CONSTRAINT `FK_").append(getName()).append("_").append(col.getName())
-                        .append("` FOREIGN KEY (`").append(col.getName()).append("`) REFERENCES `")
-                        .append(fk.getReferencedTableNames()).append("` (`").append(fk.getReferencedColumnName())
-                        .append("`)");
+        Logger.error("Tables of type TableFromDatabase and ResultTable cannot be printed");
+    }
+
+    public static TableFromDatabase getTableByName(Connector connector, String name) throws MissingColumnException {
+        return new TableFromDatabase(connector, name);
+    }
+
+    public static Table create(String name, Column... columns) {
+        return new Table.Builder(name, columns);
+    }
+
+    private static class Builder extends Table {
+        private String name;
+        private List<Column> columns;
+
+        public Builder(String name, Column... columns) {
+            this.name = name;
+            this.columns = new ArrayList<>();
+            for (Column col : columns) {
+                col.setParentTable(this);
+                this.columns.add(col);
             }
-            columns.append(sb);
         }
-        connector.executeUpdate("CREATE TABLE IF NOT EXISTS `" + getName() + "` (" +
-                columns.substring(2) + "\n)");
-        for (Row row : getRows()) {
-            row.setParentTable(this);
-            StringBuilder sb = new StringBuilder("INSERT INTO `" + getName() + "` (");
-            List<String> s = new ArrayList<>();
-            for (Cell cell : row.getCells()) {
-                if (getColumnByName(cell.getColumn().getName()) != null) {
-                    sb.append(cell.getColumn().getName()).append(", ");
-                    if (cell.getData() == null) s.add(null);
-                    else s.add(cell.getData().toString());
+
+        @Nonnull
+        @Override
+        public InstanceType getEntityType() {
+            return InstanceType.TABLE;
+        }
+
+        @Nonnull
+        @Override
+        public String getName() {
+            return this.name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+
+        @Nonnull
+        @Override
+        public List<Column> getColumns() {
+            return new ArrayList<>(this.columns);
+        }
+
+        @Override
+        public void setColumns(Column... columns) {
+            this.columns = Arrays.stream(columns).toList();
+        }
+
+        @Override
+        public void writeToDatabase(Connector connector) {
+            StringBuilder columns = new StringBuilder();
+            for (Column col : getColumns()) {
+                StringBuilder sb = new StringBuilder();
+                sb.append(", \n  ").append("`").append(col.getName()).append("` ")
+                        .append(Datatype.toString(col.getDatatype()));
+                if (col.isNotNull())
+                    sb.append(" NOT NULL");
+                if (col.getDefaultValue() != null)
+                    sb.append(" DEFAULT '").append(col.getDefaultValue()).append("'");
+                if (col.isUnique())
+                    sb.append(" UNIQUE");
+                if (col.isPrimary())
+                    sb.append(",\n  PRIMARY KEY (`").append(col.getName()).append("`)");
+                if (col.isForeignKey()) {
+                    ForeignKey fk = col.toForeignKey();
+                    sb.append(",\n  CONSTRAINT `FK_").append(getName()).append("_").append(col.getName())
+                            .append("` FOREIGN KEY (`").append(col.getName()).append("`) REFERENCES `")
+                            .append(fk.getReferencedTableNames()).append("` (`").append(fk.getReferencedColumnName())
+                            .append("`)");
                 }
+                columns.append(sb);
             }
-            sb.replace(sb.length() - 2, sb.length(), ") VALUES (?")
-                    .append(", ?".repeat(Math.max(0, s.size() - 1))).append(")");
-            connector.executeUpdate(sb.toString(), s.toArray(new Object[0]));
+            connector.executeUpdate("CREATE TABLE IF NOT EXISTS `" + getName() + "` (" +
+                    columns.substring(2) + "\n)");
+            for (Row row : getRows()) {
+                row.setParentTable(this);
+                StringBuilder sb = new StringBuilder("INSERT INTO `" + getName() + "` (");
+                List<String> s = new ArrayList<>();
+                for (Cell cell : row.getCells()) {
+                    if (getColumnByName(cell.getColumn().getName()) != null) {
+                        sb.append(cell.getColumn().getName()).append(", ");
+                        if (cell.getData() == null) s.add(null);
+                        else s.add(cell.getData().toString());
+                    }
+                }
+                sb.replace(sb.length() - 2, sb.length(), ") VALUES (?")
+                        .append(", ?".repeat(Math.max(0, s.size() - 1))).append(")");
+                connector.executeUpdate(sb.toString(), s.toArray(new Object[0]));
+            }
         }
     }
 }

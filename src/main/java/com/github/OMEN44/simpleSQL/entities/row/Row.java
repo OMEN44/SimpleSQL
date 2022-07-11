@@ -7,7 +7,6 @@ import com.github.OMEN44.simpleSQL.entities.table.Table;
 import com.github.OMEN44.simpleSQL.logger.TableUnassignedException;
 
 import javax.annotation.Nonnull;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;

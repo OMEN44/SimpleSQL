@@ -28,6 +28,7 @@ used to execute and queries and updates.<br>
 import Connector;
 import InitConnection;
 import Column;
+import com.github.OMEN44.simpleSQL.entities.table.ResultTable;
 
 public class Main {
     public static void main(String[] args) {
@@ -62,7 +63,7 @@ public class Main {
         //executing updates is simple:
         conn.executeUpdate("DELETE * FROM school WHERE `age`=18");
         //executing quires has a few more steps:
-        Table result = conn.executeQuery("SELECT * FROM school WHERE name=?", "james");
+        ResultTable result = conn.executeQuery("SELECT * FROM school WHERE name=?", "james");
         for (Column col : table.getColumns()) {
             //print the column if its name is "Subject"
             if (col.getName().equals("Subject")) {

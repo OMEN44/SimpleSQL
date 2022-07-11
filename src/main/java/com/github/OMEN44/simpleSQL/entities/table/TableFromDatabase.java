@@ -1,6 +1,7 @@
 package com.github.OMEN44.simpleSQL.entities.table;
 
 import com.github.OMEN44.simpleSQL.connectors.Connector;
+import com.github.OMEN44.simpleSQL.entities.FromDatabase;
 import com.github.OMEN44.simpleSQL.entities.column.Column;
 import com.github.OMEN44.simpleSQL.entities.column.ColumnByName;
 import com.github.OMEN44.simpleSQL.logger.Logger;
@@ -12,11 +13,13 @@ import java.util.Arrays;
 import java.util.List;
 
 @SuppressWarnings("unused")
-public class TableByName extends Table {
+public class TableFromDatabase extends Table implements FromDatabase {
+    private final Connector CONNECTOR;
     private final String NAME;
     private List<Column> columns;
 
-    public TableByName(Connector connector, String name) throws MissingColumnException {
+    protected TableFromDatabase(Connector connector, String name) throws MissingColumnException {
+        this.CONNECTOR = connector;
         boolean toggleDebug = false;
         if (Logger.isDebugMode()) {
             Logger.debugMode(false, true);
@@ -56,5 +59,18 @@ public class TableByName extends Table {
     @Override
     public void setColumns(Column... columns) {
         this.columns = Arrays.stream(columns).toList();
+    }
+
+    @Override
+    public void drop() {
+        this.CONNECTOR.executeUpdate("DROP TABLE `" + this.NAME + "`;");
+    }
+
+    public void delete(Where... conditions) {
+        this.delete(this.CONNECTOR, this.NAME, conditions);
+    }
+
+    public void deleteAll() {
+        this.delete(this.CONNECTOR, this.NAME);
     }
 }

@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="DataSourceManagerImpl" format="xml" multifile-model="true">
-    <data-source source="LOCAL" name="testing" uuid="2c3126ec-055e-4b75-8bfe-76f648d1e0b1">
-      <driver-ref>sqlite.xerial</driver-ref>
+    <data-source source="LOCAL" name="testing@localhost" uuid="61d2b04a-0044-4983-8215-58d85c476e9e">
+      <driver-ref>mysql.8</driver-ref>
       <synchronize>true</synchronize>
-      <jdbc-driver>org.sqlite.JDBC</jdbc-driver>
-      <jdbc-url>jdbc:sqlite:C:\Users\huons\Documents\JavaPrograms\SimpleSQL\database\testing.db</jdbc-url>
+      <jdbc-driver>com.mysql.cj.jdbc.Driver</jdbc-driver>
+      <jdbc-url>jdbc:mysql://localhost:3306/testing</jdbc-url>
       <working-dir>$ProjectFileDir$</working-dir>
     </data-source>
-    <data-source source="LOCAL" name="testing [2]" uuid="7d7f3fa3-0938-4233-83b1-cffc7c6f2e0c">
+    <data-source source="LOCAL" name="SQLite - testing.db" uuid="8db27a39-aea8-48b7-8e93-b4389ee6719f">
       <driver-ref>sqlite.xerial</driver-ref>
       <synchronize>true</synchronize>
       <jdbc-driver>org.sqlite.JDBC</jdbc-driver>
-      <jdbc-url>jdbc:sqlite:C:\Users\huons\Documents\Programming\JavaPrograms\SimpleSQL\database\testing.db</jdbc-url>
+      <jdbc-url>jdbc:sqlite:$PROJECT_DIR$/database/testing.db</jdbc-url>
       <working-dir>$ProjectFileDir$</working-dir>
     </data-source>
   </component>
