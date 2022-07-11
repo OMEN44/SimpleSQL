@@ -22,9 +22,9 @@ public interface FromDatabase {
         Object[] args = new Object[conditions.length];
         for (int i = 0; i < conditions.length; i++) {
             args[i] = conditions[i].data;
-            if (i != 1)
+            if (i != 0)
                 sb.append(" AND");
-            sb.append(" WHERE `").append(conditions[i].column).append("`='").append(conditions[i].data).append("'");
+            sb.append(" WHERE ").append(conditions[i].column).append("=?");
         }
         connector.executeUpdate(sb.toString(), args);
     }

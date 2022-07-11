@@ -222,7 +222,6 @@ public class Connector {
                 Logger.error("Test failed for database '" + this.database.getName() +
                         "'. Please check the database credentials used.");
                 Logger.error("Cause: " + e.getCause());
-                return;
             } finally {
                 disconnector(conn, ps);
             }
