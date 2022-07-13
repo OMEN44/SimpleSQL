@@ -1,2 +1,3 @@
 # Project exclude paths
 /target/
+src/main/java/com/github/OMEN44/simpleSQL/Main.java
