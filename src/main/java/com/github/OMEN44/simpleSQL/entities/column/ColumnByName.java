@@ -1,5 +1,6 @@
 package com.github.OMEN44.simpleSQL.entities.column;
 
+import com.github.OMEN44.simpleSQL.connectors.Condition;
 import com.github.OMEN44.simpleSQL.connectors.Connector;
 import com.github.OMEN44.simpleSQL.connectors.Datatype;
 import com.github.OMEN44.simpleSQL.entities.FromDatabase;
@@ -7,6 +8,7 @@ import com.github.OMEN44.simpleSQL.entities.cell.Cell;
 import com.github.OMEN44.simpleSQL.entities.row.Row;
 import com.github.OMEN44.simpleSQL.entities.table.ResultTable;
 import com.github.OMEN44.simpleSQL.entities.table.Table;
+import com.github.OMEN44.simpleSQL.logger.IllegalConditionException;
 import com.github.OMEN44.simpleSQL.logger.Logger;
 import com.github.OMEN44.simpleSQL.logger.MissingColumnException;
 import com.github.OMEN44.simpleSQL.logger.TableUnassignedException;
@@ -210,11 +212,11 @@ public class ColumnByName extends Column implements FromDatabase {
         ).setReferencedTableNames(this.referencedTable).setReferencedColumnName(this.referencedColumn);
     }
 
-    public void delete(Where... conditions) {
+    public void delete(Condition... conditions) throws IllegalConditionException {
         try {
             if (this.getParentTable() != null) {
                 String tableName = this.getParentTable().getName();
-                this.delete(this.CONNECTOR, this.getParentTable().getName());
+                this.delete(this.CONNECTOR, this.getParentTable().getName(), conditions);
                 return;
             }
         } catch (TableUnassignedException ignored) {
@@ -223,7 +225,7 @@ public class ColumnByName extends Column implements FromDatabase {
         Logger.error("No parent table was assigned thus no rows were deleted.");
     }
 
-    public void deleteAll() {
+    public void deleteAll() throws IllegalConditionException {
         try {
             if (this.getParentTable() != null) {
                 String tableName = this.getParentTable().getName();

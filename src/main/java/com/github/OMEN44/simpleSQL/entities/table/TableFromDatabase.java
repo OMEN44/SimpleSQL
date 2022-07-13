@@ -1,9 +1,11 @@
 package com.github.OMEN44.simpleSQL.entities.table;
 
+import com.github.OMEN44.simpleSQL.connectors.Condition;
 import com.github.OMEN44.simpleSQL.connectors.Connector;
 import com.github.OMEN44.simpleSQL.entities.FromDatabase;
 import com.github.OMEN44.simpleSQL.entities.column.Column;
 import com.github.OMEN44.simpleSQL.entities.column.ColumnByName;
+import com.github.OMEN44.simpleSQL.logger.IllegalConditionException;
 import com.github.OMEN44.simpleSQL.logger.Logger;
 import com.github.OMEN44.simpleSQL.logger.MissingColumnException;
 
@@ -66,11 +68,11 @@ public class TableFromDatabase extends Table implements FromDatabase {
         this.CONNECTOR.executeUpdate("DROP TABLE `" + this.NAME + "`;");
     }
 
-    public void delete(Where... conditions) {
+    public void delete(Condition... conditions) throws IllegalConditionException {
         this.delete(this.CONNECTOR, this.NAME, conditions);
     }
 
-    public void deleteAll() {
+    public void deleteAll() throws IllegalConditionException {
         this.delete(this.CONNECTOR, this.NAME);
     }
 }
