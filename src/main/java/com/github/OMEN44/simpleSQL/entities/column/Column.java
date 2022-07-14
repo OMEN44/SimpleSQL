@@ -98,6 +98,8 @@ public abstract class Column implements HasTable {
                 getDatatype(),
                 getDefaultValue(),
                 isPrimary(),
+                null,
+                null,
                 getCells().toArray(new Cell[0])
         );
     }

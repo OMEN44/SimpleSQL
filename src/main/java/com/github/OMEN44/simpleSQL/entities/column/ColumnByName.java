@@ -208,8 +208,10 @@ public class ColumnByName extends Column implements FromDatabase {
                 this.DATATYPE,
                 this.DEFAULT_VALUE,
                 this.PRIMARY_KEY,
+                null,
+                null,
                 this.CELLS.toArray(new Cell[0])
-        ).setReferencedTableNames(this.referencedTable).setReferencedColumnName(this.referencedColumn);
+        ).setTableReferencing(this.referencedTable).setColReferencing(this.referencedColumn);
     }
 
     public void delete(Condition... conditions) throws IllegalConditionException {

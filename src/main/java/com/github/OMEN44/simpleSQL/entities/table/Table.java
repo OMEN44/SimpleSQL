@@ -342,7 +342,7 @@ public abstract class Table implements Entity {
                     ForeignKey fk = col.toForeignKey();
                     sb.append(",\n  CONSTRAINT `FK_").append(getName()).append("_").append(col.getName())
                             .append("` FOREIGN KEY (`").append(col.getName()).append("`) REFERENCES `")
-                            .append(fk.getReferencedTableNames()).append("` (`").append(fk.getReferencedColumnName())
+                            .append(fk.getTableReferencing()).append("` (`").append(fk.getColReferencing())
                             .append("`)");
                 }
                 columns.append(sb);

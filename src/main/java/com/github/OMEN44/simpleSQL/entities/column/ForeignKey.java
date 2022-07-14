@@ -2,55 +2,52 @@ package com.github.OMEN44.simpleSQL.entities.column;
 
 import com.github.OMEN44.simpleSQL.connectors.Datatype;
 import com.github.OMEN44.simpleSQL.entities.cell.Cell;
-import com.github.OMEN44.simpleSQL.entities.table.Table;
 
 import javax.annotation.Nonnull;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 @SuppressWarnings("unused")
 public class ForeignKey extends UniqueColumn {
 
-    private List<Table> referencedTables;
-    private String referencedTableName;
-    private String referencedColumnName;
+    private String tableReferencing;
+    private String colReferencing;
     private String onDelete;
     private String onUpdate;
 
-    public ForeignKey(String name, Datatype dataType, @Nonnull Object defaultValue, boolean primaryKey, Cell... cells) {
+    public ForeignKey(String name, Datatype dataType, @Nonnull Object defaultValue, boolean primaryKey,
+                      String colReferencing, String tableReferencing, Cell... cells) {
         super(name, dataType, defaultValue, primaryKey, true, cells);
+        setColReferencing(colReferencing);
+        setTableReferencing(tableReferencing);
     }
 
-    public ForeignKey(String name, Datatype dataType, @Nonnull Object defaultValue, Cell... cells) {
+    public ForeignKey(String name, Datatype dataType, @Nonnull Object defaultValue, String colReferencing,
+                      String tableReferencing, Cell... cells) {
         super(name, dataType, defaultValue, false, true, cells);
+        setColReferencing(colReferencing);
+        setTableReferencing(tableReferencing);
     }
 
-    public List<Table> getReferencedTables() {
-        if (this.referencedTables == null) return new ArrayList<>();
-        return referencedTables;
+    public ForeignKey(String name, Datatype datatype, String colReferencing, String tableReferencing) {
+        super(name, datatype, null, false, true);
+        setColReferencing(colReferencing);
+        setTableReferencing(tableReferencing);
     }
 
-    public ForeignKey setReferencedTables(Table... referencedTables) {
-        this.referencedTables = Arrays.stream(referencedTables).toList();
+    public String getTableReferencing() {
+        return tableReferencing;
+    }
+
+    public ForeignKey setTableReferencing(String referencedTableNames) {
+        this.tableReferencing = referencedTableNames;
         return this;
     }
 
-    public String getReferencedTableNames() {
-        return referencedTableName;
+    public String getColReferencing() {
+        return colReferencing;
     }
 
-    public ForeignKey setReferencedTableNames(String referencedTableNames) {
-        this.referencedTableName = referencedTableNames;
-        return this;
-    }
-
-    public String getReferencedColumnName() {
-        return referencedColumnName;
-    }
-
-    public ForeignKey setReferencedColumnName(String referencedColumnName) {
-        this.referencedColumnName = referencedColumnName;
+    public ForeignKey setColReferencing(String colReferencing) {
+        this.colReferencing = colReferencing;
         return this;
     }
 }
