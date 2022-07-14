@@ -230,9 +230,8 @@ public class Connector implements FromDatabase {
                 }
             } catch (SQLException | SimpleSQLException e) {
                 this.status = Status.FAILED_TEST;
-                Logger.error("Test failed for database '" + this.database.getName() +
-                        "' please check the database credentials used.");
-                Logger.error("Cause: " + e.getCause());
+                Logger.error("Failed to execute Query");
+                e.printStackTrace();
             } finally {
                 disconnector(conn, ps);
             }
@@ -296,9 +295,8 @@ public class Connector implements FromDatabase {
                 }
             } catch (SQLException | SimpleSQLException e) {
                 this.status = Status.FAILED_TEST;
-                Logger.error("Test failed for database '" + this.database.getName() +
-                        "'. Please check the database credentials used.");
-                Logger.error("Cause: " + e.getCause());
+                Logger.error("Failed to execute Update");
+                e.printStackTrace();
                 return null;
             } finally {
                 disconnector(conn, ps);
