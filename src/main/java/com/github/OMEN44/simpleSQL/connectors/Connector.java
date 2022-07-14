@@ -3,6 +3,7 @@ package com.github.OMEN44.simpleSQL.connectors;
 import com.github.OMEN44.simpleSQL.connectors.dbProfiles.Database;
 import com.github.OMEN44.simpleSQL.connectors.dbProfiles.MySQL;
 import com.github.OMEN44.simpleSQL.connectors.dbProfiles.SQLite;
+import com.github.OMEN44.simpleSQL.entities.FromDatabase;
 import com.github.OMEN44.simpleSQL.entities.cell.Cell;
 import com.github.OMEN44.simpleSQL.entities.cell.CreateCell;
 import com.github.OMEN44.simpleSQL.entities.column.Column;
@@ -22,11 +23,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-import static com.github.OMEN44.simpleSQL.logger.Logger.debug;
-import static com.github.OMEN44.simpleSQL.logger.Logger.log;
+import static com.github.OMEN44.simpleSQL.logger.Logger.*;
 
 @SuppressWarnings("unused")
-public class Connector {
+public class Connector implements FromDatabase {
 
     private final Database database;
     private final Database.DatabaseType connType;
@@ -49,12 +49,14 @@ public class Connector {
         log("Connector is ready with " + databaseType() + " database for connection");
     }
 
-    public Connector test() {
-        switch (this.connType) {
-            case SQLITE -> executeQuery("SELECT name FROM sqlite_master");
-            case MYSQL -> executeQuery("SHOW TABLES");
+    public boolean test() {
+        try {
+            getSQLConnection();
+            return this.status != Status.FAILED_TEST;
+        } catch (SimpleSQLException e) {
+            this.status = Status.FAILED_TEST;
+            return false;
         }
-        return this;
     }
 
     @SuppressWarnings("all")
@@ -71,7 +73,7 @@ public class Connector {
             try {
                 dataFolder.createNewFile();
             } catch (IOException e) {
-                System.err.println("File write error: " + sqLite.getName() + ".db");
+                error("File write error: " + sqLite.getName() + ".db");
             }
         }
     }
@@ -150,7 +152,11 @@ public class Connector {
                             mySQL.getPassword()
                     );
                 } catch (SQLException e) {
-                    Logger.printSQLException(e);
+                    this.status = Status.FAILED_TEST;
+                    Logger.error("Test failed for database '" + this.database.getName() +
+                            "' please check the database credentials used.");
+                    Logger.error("Cause: " + e.getCause());
+                    return null;
                 }
                 this.status = Status.CONNECTED;
                 return connection;
@@ -169,10 +175,10 @@ public class Connector {
                     this.status = Status.CONNECTED;
                     return connection;
                 } catch (SQLException ex) {
-                    System.err.println("SQLite exception on initialize");
+                    error("SQLite exception on initialize");
                     ex.printStackTrace();
                 } catch (ClassNotFoundException ex) {
-                    System.err.println("You need the SQLite JDBC library. Google it. Put it in /lib folder.");
+                    error("You need the SQLite JDBC library. Google it. Put it in /lib folder.");
                 }
             }
         }
@@ -220,7 +226,7 @@ public class Connector {
             } catch (SQLException | SimpleSQLException e) {
                 this.status = Status.FAILED_TEST;
                 Logger.error("Test failed for database '" + this.database.getName() +
-                        "'. Please check the database credentials used.");
+                        "' please check the database credentials used.");
                 Logger.error("Cause: " + e.getCause());
             } finally {
                 disconnector(conn, ps);
@@ -293,14 +299,15 @@ public class Connector {
                 disconnector(conn, ps);
             }
             debug("Response tabulated");
+            System.out.println(this.status);
             debug("Retrieved: " + columns.size() + " columns with, " +
                     Objects.requireNonNull(columns.get(0).getCells()).size() + " rows");
             return new ResultTable(
                     sql,
                     columns.toArray(new Column[0])
             );
-        } else Logger.error("Query canceled due to failed test. Returning null...");
-        return null;
+        } else Logger.error("Query canceled due to failed test. Returning empty table...");
+        return new ResultTable(sql);
     }
 
     enum Status {

@@ -15,4 +15,8 @@ public class PrimaryKey extends UniqueColumn {
     public PrimaryKey(String name, Datatype dataType, @Nonnull Object defaultValue, Cell... cells) {
         super(name, dataType, defaultValue, true, false, cells);
     }
+
+    public PrimaryKey(String name, Datatype datatype) {
+        super(name, datatype, null, true, false);
+    }
 }

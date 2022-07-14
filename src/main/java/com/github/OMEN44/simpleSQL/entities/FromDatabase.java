@@ -59,8 +59,13 @@ public interface FromDatabase {
         connector.executeUpdate(sb.toString(), args);
     }
 
-    default void create() {
-
+    default void create(Connector connector, String tableName, String existingTable, String[] columnNames, Condition... conditions) {
+        /*
+        CREATE TABLE new_table_name AS
+        SELECT column1, column2,...
+        FROM existing_table_name
+        WHERE ....;
+        */
     }
 
     default void drop() throws TableUnassignedException {
@@ -68,6 +73,9 @@ public interface FromDatabase {
     }
 
     default void alter() {
-
+        /*
+        The ALTER TABLE statement is used to add, delete, or modify columns in an existing table.
+        The ALTER TABLE...ALTER COLUMN statement is also used to add and drop various constraints on an existing table.
+        */
     }
 }

@@ -15,4 +15,8 @@ public class UniqueColumn extends CreateColumn {
     public UniqueColumn(String name, Datatype dataType, @Nonnull Object defaultValue, Cell... cells) {
         super(name, dataType, defaultValue, true, true, false, false, cells);
     }
+
+    public UniqueColumn(String name, Datatype datatype) {
+        super(name, datatype, null, true, true, false, false);
+    }
 }
