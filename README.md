@@ -93,3 +93,22 @@ public class Main {
 * BETA - This stage in the release focuses on usability and removing bugs:
   * 0.2 - Improve print and include boxerLib in the library
   * 0.3 - 
+
+### How to add this library to your project:
+Add this to your pom.xml file:
+```xml
+    <repositories>
+        <repository>
+            <id>jitpack.io</id>
+            <url>https://jitpack.io</url>
+        </repository>
+    </repositories>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.github.OMEN44</groupId>
+            <artifactId>simplesql</artifactId>
+            <version>0.1-BETA</version>
+        </dependency>
+    </dependencies>
+```
