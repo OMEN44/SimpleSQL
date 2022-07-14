@@ -54,6 +54,10 @@ public abstract class Column implements HasTable {
      */
     public abstract boolean isForeignKey();
 
+    public abstract String getColReferencing();
+
+    public abstract String getTableReferencing();
+
     /**
      * @return Gets a list of all the cells in a column. Returns null if there are no rows.
      */
@@ -98,8 +102,8 @@ public abstract class Column implements HasTable {
                 getDatatype(),
                 getDefaultValue(),
                 isPrimary(),
-                null,
-                null,
+                getColReferencing(),
+                getTableReferencing(),
                 getCells().toArray(new Cell[0])
         );
     }

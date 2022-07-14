@@ -21,7 +21,26 @@ public class CreateColumn extends Column {
     private List<Cell> cells;
     private Table parentTable;
     private boolean notNull;
+    private String colReferencing;
+    private String tableReferencing;
 
+    public CreateColumn(String name, Datatype dataType, Object defaultValue,
+                        boolean notNull, boolean isUnique, boolean primaryKey, boolean foreignKey,
+                        String colReferencing, String tableReferencing, Cell... cells) {
+        this.datatype = dataType;
+        this.name = name;
+        this.defaultValue = defaultValue;
+        this.notNull = notNull;
+        if (primaryKey || foreignKey)
+            this.IS_UNIQUE = true;
+        else
+            this.IS_UNIQUE = isUnique;
+        this.PRIMARY_KEY = primaryKey;
+        this.FOREIGN_KEY = foreignKey;
+        this.colReferencing = colReferencing;
+        this.tableReferencing = tableReferencing;
+        this.cells = new ArrayList<>(Arrays.stream(cells).toList());
+    }
     public CreateColumn(String name, Datatype dataType, Object defaultValue,
                         boolean notNull, boolean isUnique, boolean primaryKey, boolean foreignKey, Cell... cells) {
         this.datatype = dataType;
@@ -46,6 +65,22 @@ public class CreateColumn extends Column {
         this.PRIMARY_KEY = false;
         this.FOREIGN_KEY = false;
         this.cells = new ArrayList<>(Arrays.stream(cells).toList());
+    }
+
+    public String getColReferencing() {
+        return colReferencing;
+    }
+
+    public String getTableReferencing() {
+        return tableReferencing;
+    }
+
+    public void setColReferencing(String colReferencing) {
+        this.colReferencing = colReferencing;
+    }
+
+    public void setTableReferencing(String tableReferencing) {
+        this.tableReferencing = tableReferencing;
     }
 
     @Nonnull

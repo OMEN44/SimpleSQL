@@ -68,7 +68,12 @@ public class Connector implements FromDatabase {
                 e.printStackTrace();
             }
         }
-        File dataFolder = new File(sqLite.getDataFolder(), sqLite.getName() + ".db");
+        File dataFolder;
+        if (sqLite.getName().endsWith(".db")) {
+            dataFolder = new File(sqLite.getDataFolder(), sqLite.getName());
+        } else {
+            dataFolder = new File(sqLite.getDataFolder(), sqLite.getName() + ".db");
+        }
         if (!dataFolder.exists()) {
             try {
                 dataFolder.createNewFile();

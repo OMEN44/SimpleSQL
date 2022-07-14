@@ -200,6 +200,16 @@ public class ColumnByName extends Column implements FromDatabase {
         return this.FOREIGN_KEY;
     }
 
+    @Override
+    public String getColReferencing() {
+        return this.referencedColumn;
+    }
+
+    @Override
+    public String getTableReferencing() {
+        return this.referencedTable;
+    }
+
     @Nonnull
     @Override
     public ForeignKey toForeignKey() {
@@ -208,10 +218,10 @@ public class ColumnByName extends Column implements FromDatabase {
                 this.DATATYPE,
                 this.DEFAULT_VALUE,
                 this.PRIMARY_KEY,
-                null,
-                null,
+                this.referencedColumn,
+                this.referencedTable,
                 this.CELLS.toArray(new Cell[0])
-        ).setTableReferencing(this.referencedTable).setColReferencing(this.referencedColumn);
+        );
     }
 
     public void delete(Condition... conditions) throws IllegalConditionException {
