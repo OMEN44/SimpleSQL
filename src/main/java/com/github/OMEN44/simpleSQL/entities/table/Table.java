@@ -347,8 +347,6 @@ public abstract class Table implements Entity {
                 }
                 columns.append(sb);
             }
-            System.out.println("CREATE TABLE IF NOT EXISTS `" + getName() + "` (" +
-                    columns.substring(2) + "\n)");
             connector.executeUpdate("CREATE TABLE IF NOT EXISTS `" + getName() + "` (" +
                     columns.substring(2) + "\n)");
             for (Row row : getRows()) {
