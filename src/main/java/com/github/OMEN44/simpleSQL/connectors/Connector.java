@@ -46,7 +46,7 @@ public class Connector implements FromDatabase {
         this.connType = database.getDatabaseType();
         this.database = database;
         this.status = Status.READY;
-        log("Connector is ready with " + databaseType() + " database for connection");
+        debug("Connector is ready with " + databaseType() + " database for connection");
     }
 
     public boolean test() {
